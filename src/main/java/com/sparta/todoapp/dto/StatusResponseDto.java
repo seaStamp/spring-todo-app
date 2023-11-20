@@ -1,15 +1,14 @@
 package com.sparta.todoapp.dto;
 
 import lombok.Getter;
-import org.springframework.http.HttpStatus;
 
 @Getter
 public class StatusResponseDto {
-    private HttpStatus status;
-    private String error;
+    private int status;
+    private String message;
 
-    public StatusResponseDto(HttpStatus status, String error) {
+    public StatusResponseDto(int status, String message) {
         this.status = status;
-        this.error = error;
+        this.message = message;
     }
 }
