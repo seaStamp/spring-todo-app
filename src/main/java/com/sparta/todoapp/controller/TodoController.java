@@ -15,6 +15,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -48,11 +49,24 @@ public class TodoController {
     @GetMapping
     public ResponseEntity<List<TodoListResponseDto>> getAllTodos() {
         List<TodoListResponseDto> response = new ArrayList<>();
-
         Map<UserDto, List<TodoResponseDto>> responseDtoMap = todoService.getUserTodoMap();
 
         responseDtoMap.forEach((key, value) -> response.add(new TodoListResponseDto(key, value)));
 
         return ResponseEntity.ok().body(response);
+    }
+
+    @PatchMapping("/{todoId}")
+    public ResponseEntity<StatusResponseDto> updateTodo(@PathVariable Long todoId,
+                                                        @RequestBody TodoRequestDto requestDto,
+                                                        @AuthenticationPrincipal UserDetailsImpl userDetails){
+        try {
+            TodoResponseDto responseDto = todoService.updateTodo(todoId, requestDto, userDetails.getUser());
+            return ResponseEntity.ok().body(responseDto);
+        } catch (NullPointerException e){
+            return ResponseEntity.notFound().build();
+        } catch (IllegalArgumentException e){
+            return ResponseEntity.badRequest().body(new StatusResponseDto(HttpStatus.BAD_REQUEST.value(), e.getMessage()));
+        }
     }
 }

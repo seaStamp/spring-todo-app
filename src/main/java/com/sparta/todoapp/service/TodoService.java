@@ -7,14 +7,13 @@ import com.sparta.todoapp.entity.Todo;
 import com.sparta.todoapp.entity.User;
 import com.sparta.todoapp.repository.TodoRepository;
 import com.sparta.todoapp.repository.UserRepository;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -28,10 +27,8 @@ public class TodoService {
     }
 
     public TodoResponseDto getTodo(Long todoId) {
-        System.out.println("조회중");
         Todo todo = todoRepository.findById(todoId)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 할일 ID 입니다"));
-        System.out.println("조회 끝");
         return new TodoResponseDto(todo);
     }
 
@@ -53,5 +50,34 @@ public class TodoService {
         return todoList.stream()
                 .map(TodoResponseDto::new)
                 .collect(Collectors.toList());
+    }
+
+    @Transactional
+    public TodoResponseDto updateTodo(Long id, TodoRequestDto requestDto, User user) {
+        Todo todo = validateTodo(id, user);
+        todo.update(requestDto);
+        return new TodoResponseDto(todo);
+    }
+
+    public Todo validateTodo(Long todoid, User user) {
+        Todo todo = new Todo();
+
+        // 아예 작성하지 않았을 경우
+        if(todoRepository.findAll().isEmpty()){
+            throw new NullPointerException("작성한 Todo가 없습니다.");
+        }
+
+        // 해당하는 todo가 존재하는지 확인
+         todo = todoRepository.findById(todoid).orElseThrow(() ->
+                new NullPointerException("해당 Todo가 존재하지 않습니다."));
+
+        // 작성자가 맞는지 확인
+        if (!(todo.getUser().getId().equals(user.getId()))){
+            System.out.println("user.getUsername() = " + user.getUsername());
+            System.out.println("todo.getUser().getUsername() = " + todo.getUser().getUsername());
+            throw new IllegalArgumentException("해당 todo의 작성자만이 수정이 가능합니다.");
+        }
+
+        return todo;
     }
 }
