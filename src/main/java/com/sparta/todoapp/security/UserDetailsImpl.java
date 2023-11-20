@@ -2,11 +2,13 @@ package com.sparta.todoapp.security;
 
 import com.sparta.todoapp.entity.User;
 import java.util.Collection;
+import lombok.Getter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 public class UserDetailsImpl implements UserDetails {
 
+    @Getter
     private final User user;
 
     public UserDetailsImpl(User user) {
