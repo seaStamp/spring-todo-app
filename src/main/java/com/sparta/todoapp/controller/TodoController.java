@@ -1,10 +1,15 @@
 package com.sparta.todoapp.controller;
 
 import com.sparta.todoapp.dto.StatusResponseDto;
+import com.sparta.todoapp.dto.TodoListResponseDto;
 import com.sparta.todoapp.dto.TodoRequestDto;
 import com.sparta.todoapp.dto.TodoResponseDto;
+import com.sparta.todoapp.dto.UserDto;
 import com.sparta.todoapp.security.UserDetailsImpl;
 import com.sparta.todoapp.service.TodoService;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -38,5 +43,16 @@ public class TodoController {
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(new StatusResponseDto(HttpStatus.BAD_REQUEST.value(),e.getMessage()));
         }
+    }
+
+    @GetMapping
+    public ResponseEntity<List<TodoListResponseDto>> getAllTodos() {
+        List<TodoListResponseDto> response = new ArrayList<>();
+
+        Map<UserDto, List<TodoResponseDto>> responseDtoMap = todoService.getUserTodoMap();
+
+        responseDtoMap.forEach((key, value) -> response.add(new TodoListResponseDto(key, value)));
+
+        return ResponseEntity.ok().body(response);
     }
 }

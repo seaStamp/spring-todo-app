@@ -29,6 +29,9 @@ public class Todo extends Timestamped {
     @Column(nullable = false)
     private String content;
 
+    @Column(nullable = false)
+    private boolean complete;
+
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
