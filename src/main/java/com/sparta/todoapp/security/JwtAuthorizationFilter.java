@@ -43,7 +43,7 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
                 // 토큰이 유효하지 않음을 JSON 형식으로 응답 메시지, 상태코드 생성
                 ObjectMapper ob = new ObjectMapper();
                 String message = "토큰이 유효하지 않습니다.";
-                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 
                 String jsonResponse = ob.writeValueAsString(new StatusResponseDto(response.getStatus(),message));
 

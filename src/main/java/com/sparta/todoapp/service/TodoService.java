@@ -10,6 +10,7 @@ import com.sparta.todoapp.repository.UserRepository;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.RejectedExecutionException;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -53,14 +54,23 @@ public class TodoService {
     }
 
     @Transactional
-    public TodoResponseDto updateTodo(Long id, TodoRequestDto requestDto, User user) {
-        Todo todo = validateTodo(id, user);
+    public TodoResponseDto updateTodo(Long todoId, TodoRequestDto requestDto, User user) {
+        Todo todo = validateTodo(todoId, user);
         todo.update(requestDto);
         return new TodoResponseDto(todo);
     }
 
+    @Transactional
+    public TodoResponseDto completeTodo(Long todoId, User user) {
+        Todo todo = validateTodo(todoId, user);
+        todo.complete(); // 완료처리
+        return new TodoResponseDto(todo);
+    }
+
+
+
     public Todo validateTodo(Long todoid, User user) {
-        Todo todo = new Todo();
+        Todo todo;
 
         // 아예 작성하지 않았을 경우
         if(todoRepository.findAll().isEmpty()){
@@ -69,13 +79,11 @@ public class TodoService {
 
         // 해당하는 todo가 존재하는지 확인
          todo = todoRepository.findById(todoid).orElseThrow(() ->
-                new NullPointerException("해당 Todo가 존재하지 않습니다."));
+                new IllegalArgumentException("존재하지 않는 할일 ID입니다."));
 
         // 작성자가 맞는지 확인
         if (!(todo.getUser().getId().equals(user.getId()))){
-            System.out.println("user.getUsername() = " + user.getUsername());
-            System.out.println("todo.getUser().getUsername() = " + todo.getUser().getUsername());
-            throw new IllegalArgumentException("해당 todo의 작성자만이 수정이 가능합니다.");
+            throw new RejectedExecutionException("작성자만 수정이 가능합니다.");
         }
 
         return todo;

@@ -30,7 +30,7 @@ public class Todo extends Timestamped {
     private String content;
 
     @Column(nullable = false)
-    private boolean complete;
+    private boolean isCompleted;
 
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
@@ -40,6 +40,7 @@ public class Todo extends Timestamped {
         this.title = requestDto.getTitle();
         this.content = requestDto.getContent();
         this.user = user;
+        this.isCompleted = false;
     }
 
     public void update(TodoRequestDto requestDto) {
@@ -51,5 +52,9 @@ public class Todo extends Timestamped {
             System.out.println("get content");
             this.content = requestDto.getContent();
         }
+    }
+
+    public void complete() {
+        this.isCompleted = true;
     }
 }

@@ -10,6 +10,7 @@ import com.sparta.todoapp.service.TodoService;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.RejectedExecutionException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -37,12 +38,13 @@ public class TodoController {
     }
 
     @GetMapping("/{todoId}")
-    public ResponseEntity<StatusResponseDto> getTodo(@PathVariable Long todoId){
-        try{
+    public ResponseEntity<StatusResponseDto> getTodo(@PathVariable Long todoId) {
+        try {
             TodoResponseDto responseDto = todoService.getTodo(todoId);
             return ResponseEntity.ok().body(responseDto);
         } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body(new StatusResponseDto(HttpStatus.BAD_REQUEST.value(),e.getMessage()));
+            return ResponseEntity.badRequest()
+                    .body(new StatusResponseDto(HttpStatus.BAD_REQUEST.value(), e.getMessage()));
         }
     }
 
@@ -59,14 +61,29 @@ public class TodoController {
     @PatchMapping("/{todoId}")
     public ResponseEntity<StatusResponseDto> updateTodo(@PathVariable Long todoId,
                                                         @RequestBody TodoRequestDto requestDto,
-                                                        @AuthenticationPrincipal UserDetailsImpl userDetails){
+                                                        @AuthenticationPrincipal UserDetailsImpl userDetails) {
         try {
             TodoResponseDto responseDto = todoService.updateTodo(todoId, requestDto, userDetails.getUser());
             return ResponseEntity.ok().body(responseDto);
-        } catch (NullPointerException e){
+        } catch (NullPointerException e) {
             return ResponseEntity.notFound().build();
-        } catch (IllegalArgumentException e){
-            return ResponseEntity.badRequest().body(new StatusResponseDto(HttpStatus.BAD_REQUEST.value(), e.getMessage()));
+        } catch (IllegalArgumentException | RejectedExecutionException e) {
+            return ResponseEntity.badRequest()
+                    .body(new StatusResponseDto(HttpStatus.BAD_REQUEST.value(), e.getMessage()));
+        }
+    }
+
+    @PatchMapping("/{todoId}/complete")
+    public ResponseEntity<StatusResponseDto> completeTodo(@PathVariable Long todoId,
+                                                          @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        try {
+            TodoResponseDto responseDto = todoService.completeTodo(todoId, userDetails.getUser());
+            return ResponseEntity.ok().body(responseDto);
+        } catch (NullPointerException e) {
+            return ResponseEntity.notFound().build();
+        } catch (IllegalArgumentException | RejectedExecutionException e) {
+            return ResponseEntity.badRequest()
+                    .body(new StatusResponseDto(HttpStatus.BAD_REQUEST.value(), e.getMessage()));
         }
     }
 }
