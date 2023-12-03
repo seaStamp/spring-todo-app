@@ -107,7 +107,8 @@
       - Todo, Comment Controller 에 대해서 테스트를 추가.
 - [ ]  **Service Test 추가하기**
       - `@ExtendWith` 를 사용하여 Service Test 를 추가.
-      - User, UserDetails, Todo, Comment Service 에 대해서 테스트를 추가.
+      - User, Todo Service 에 대해서 테스트를 추가.
+      - UserDetails, Comment Service 에 대해서 테스트를 추가.
 - [ ]  **Repository Test 추가하기**
       - `@DataJpaTest` 를 사용하여 Repository Test 를 추가.
       - User, Todo, Comment Repository 에 대해서 테스트를 추가.
