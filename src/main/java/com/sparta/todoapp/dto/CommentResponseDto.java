@@ -11,9 +11,9 @@ public class CommentResponseDto {
     private String username;
     private LocalDateTime createDate;
 
-    public CommentResponseDto(Comment comment, User user){
+    public CommentResponseDto(Comment comment){
         this.text = comment.getText();
-        this.username = user.getUsername();
+        this.username = comment.getUser().getUsername();
         this.createDate = comment.getCreatedAt();
     }
 }

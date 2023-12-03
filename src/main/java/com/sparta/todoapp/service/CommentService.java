@@ -7,6 +7,7 @@ import com.sparta.todoapp.entity.Todo;
 import com.sparta.todoapp.entity.User;
 import com.sparta.todoapp.repository.CommentRepository;
 import com.sparta.todoapp.repository.TodoRepository;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,6 +25,14 @@ public class CommentService {
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 todo 입니다."));
         Comment comment = new Comment(requestDto, user, todo);
         commentRepository.save(comment);
-        return new CommentResponseDto(comment, user);
+        return new CommentResponseDto(comment);
+    }
+
+    public List<CommentResponseDto> getComments(Long todoId) {
+        // 해당 Todo가 있는지 확인
+        todoRepository.findById(todoId).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 todo 입니다."));
+
+        List<Comment> commentList = commentRepository.findAllByTodoIdOrderByCreatedAt(todoId);
+        return commentList.stream().map(CommentResponseDto::new).toList();
     }
 }
