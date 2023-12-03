@@ -10,6 +10,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -33,6 +34,7 @@ public class Comment extends Timestamped{
     @JoinColumn(name = "todo_id", nullable = false)
     private Todo todo;
 
+    @Builder
     public Comment(CommentRequestDto requestDto, User user, Todo todo){
         this.text = requestDto.getText();
         this.user = user;
