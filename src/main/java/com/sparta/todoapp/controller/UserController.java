@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class UserController {
 
     private final UserService userService;
+    private static String successMessage = "가입에 성공했습니다";
 
     @PostMapping("/user/signup")
     public ResponseEntity<Object> signup(@Valid @RequestBody SignupRequestDto requestDto, BindingResult bindingResult){
@@ -35,7 +36,6 @@ public class UserController {
         }
         try {
             userService.signup(requestDto);
-            String successMessage = "가입에 성공했습니다";
             return ResponseEntity.ok().body(new StatusResponseDto(HttpStatus.OK.value(),successMessage));
         } catch (IllegalArgumentException ex){
             return ResponseEntity.badRequest().body(new StatusResponseDto(HttpStatus.BAD_REQUEST.value(), ex.getMessage()));
