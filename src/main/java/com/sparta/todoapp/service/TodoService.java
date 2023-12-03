@@ -18,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class TodoService {
     private final TodoRepository todoRepository;
     private final UserRepository userRepository;
@@ -27,12 +28,14 @@ public class TodoService {
         return new TodoResponseDto(todo);
     }
 
+    @Transactional(readOnly = true)
     public TodoResponseDto getTodo(Long todoId) {
         Todo todo = todoRepository.findById(todoId)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 할일 ID 입니다"));
         return new TodoResponseDto(todo);
     }
 
+    @Transactional(readOnly = true)
     public Map<UserDto, List<TodoResponseDto>> getUserTodoMap() {
         Map<UserDto, List<TodoResponseDto>> userTodoMap = new HashMap<>();
 
@@ -53,23 +56,19 @@ public class TodoService {
                 .collect(Collectors.toList());
     }
 
-    @Transactional
     public TodoResponseDto updateTodo(Long todoId, TodoRequestDto requestDto, User user) {
         Todo todo = validateTodo(todoId, user);
         todo.update(requestDto);
         return new TodoResponseDto(todo);
     }
 
-    @Transactional
     public TodoResponseDto completeTodo(Long todoId, User user) {
         Todo todo = validateTodo(todoId, user);
         todo.complete(); // 완료처리
         return new TodoResponseDto(todo);
     }
 
-
-
-    public Todo validateTodo(Long todoid, User user) {
+    public Todo validateTodo(Long todoId, User user) {
         Todo todo;
 
         // 아예 작성하지 않았을 경우
@@ -78,7 +77,7 @@ public class TodoService {
         }
 
         // 해당하는 todo가 존재하는지 확인
-         todo = todoRepository.findById(todoid).orElseThrow(() ->
+         todo = todoRepository.findById(todoId).orElseThrow(() ->
                 new IllegalArgumentException("존재하지 않는 할일 ID입니다."));
 
         // 작성자가 맞는지 확인
