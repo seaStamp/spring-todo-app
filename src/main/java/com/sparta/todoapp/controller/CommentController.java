@@ -11,13 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api")
@@ -56,6 +50,21 @@ public class CommentController {
         try {
             CommentResponseDto responseDto = commentService.modifyComment(commentId, requestDto, userDetails.getUser());
             return ResponseEntity.ok().body(responseDto);
+        } catch (RejectedExecutionException e) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body(new StatusResponseDto(HttpStatus.FORBIDDEN.value(), e.getMessage()));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(new StatusResponseDto(HttpStatus.NOT_FOUND.value(), e.getMessage()));
+        }
+    }
+
+    @DeleteMapping("/comments/{commentId}")
+    public ResponseEntity<StatusResponseDto> deleteComment(@PathVariable Long commentId,
+                                           @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        try {
+            commentService.deleteComment(commentId, userDetails.getUser());
+            return ResponseEntity.ok().body(new StatusResponseDto(HttpStatus.OK.value(), "댓글 삭제 성공"));
         } catch (RejectedExecutionException e) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN)
                     .body(new StatusResponseDto(HttpStatus.FORBIDDEN.value(), e.getMessage()));

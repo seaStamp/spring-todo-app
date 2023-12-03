@@ -46,6 +46,13 @@ public class CommentService {
         return new CommentResponseDto(comment);
     }
 
+    public void deleteComment(Long commentId, User user) {
+        // comment가 있는지 확인 + 작성자가 맞는지 확인
+        Comment comment = findComment(commentId, user);
+
+        commentRepository.delete(comment);
+    }
+
     private Comment findComment(Long commentId, User user) {
         Comment comment = commentRepository.findById(commentId)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 댓글 입니다."));
