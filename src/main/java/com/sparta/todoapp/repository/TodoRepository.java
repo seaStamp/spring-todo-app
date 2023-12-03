@@ -7,6 +7,5 @@ import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface TodoRepository extends JpaRepository<Todo, Long> {
-    List<Todo> findAllByUser(User user);
-    List<Todo> findAllByUserOrderByCreatedAtDesc(User user);
+    List<Todo> findAllByUserAndIsCompletedOrderByCreatedAtDesc(User user, boolean b);
 }

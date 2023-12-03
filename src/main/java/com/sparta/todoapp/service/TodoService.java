@@ -45,7 +45,9 @@ public class TodoService {
             UserDto userDto = new UserDto(user);
             // 사용자의 할일목록을 내림차순으로 가져옴
             List<TodoResponseDto> todolistDto = convertTodoListToResponseDtoList(
-                    todoRepository.findAllByUserOrderByCreatedAtDesc(user));
+                    todoRepository.findAllByUserAndIsCompletedOrderByCreatedAtDesc(user, false));
+            todolistDto.addAll(convertTodoListToResponseDtoList(
+                    todoRepository.findAllByUserAndIsCompletedOrderByCreatedAtDesc(user,true)));
             userTodoMap.put(userDto, todolistDto);
         }
         return userTodoMap;
