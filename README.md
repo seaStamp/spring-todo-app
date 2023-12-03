@@ -99,9 +99,9 @@
 
 --------
 ## 테스트
-- [ ]  **DTO, Entity Test 추가하기**
+- [x]  **DTO, Entity Test 추가하기**
     - `@Test` 를 사용해서 DTO 와 Entity Test 를 추가.
-    - User, Todo, Comment, SigupRequestDTO 에 존재하는 메서드들에 대해서 테스트를 추가.
+    - User, Todo, Comment에 존재하는 메서드들에 대해서 테스트를 추가.
 - [ ]  **Controller Test 추가하기**
       - `@WebMvcTest` 를 사용하여 Controller Test 를 추가.
       - Todo, Comment Controller 에 대해서 테스트를 추가.
