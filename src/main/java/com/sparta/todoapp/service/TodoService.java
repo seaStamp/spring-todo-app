@@ -5,6 +5,7 @@ import com.sparta.todoapp.dto.TodoResponseDto;
 import com.sparta.todoapp.dto.UserDto;
 import com.sparta.todoapp.entity.Todo;
 import com.sparta.todoapp.entity.User;
+import com.sparta.todoapp.exception.NotFoundException;
 import com.sparta.todoapp.repository.TodoRepository;
 import com.sparta.todoapp.repository.UserRepository;
 import java.util.HashMap;
@@ -31,7 +32,7 @@ public class TodoService {
     @Transactional(readOnly = true)
     public TodoResponseDto getTodo(Long todoId) {
         Todo todo = todoRepository.findById(todoId)
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 할일 ID 입니다"));
+                .orElseThrow(() -> new NotFoundException("존재하지 않는 할일 ID 입니다"));
         return new TodoResponseDto(todo);
     }
 
@@ -71,14 +72,9 @@ public class TodoService {
     public Todo validateTodo(Long todoId, User user) {
         Todo todo;
 
-        // 아예 작성하지 않았을 경우
-        if(todoRepository.findAll().isEmpty()){
-            throw new NullPointerException("작성한 Todo가 없습니다.");
-        }
-
         // 해당하는 todo가 존재하는지 확인
          todo = todoRepository.findById(todoId).orElseThrow(() ->
-                new IllegalArgumentException("존재하지 않는 할일 ID입니다."));
+                new NotFoundException("존재하지 않는 할일 ID입니다."));
 
         // 작성자가 맞는지 확인
         if (!(todo.getUser().getId().equals(user.getId()))){

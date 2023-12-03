@@ -20,57 +20,28 @@ public class CommentController {
     private final CommentService commentService;
 
     @PostMapping("/todos/{todoId}/comments")
-    public ResponseEntity<?> createComment(@PathVariable Long todoId,
-                                           @RequestBody CommentRequestDto requestDto,
-                                           @AuthenticationPrincipal UserDetailsImpl userDetails) {
-        try {
-            CommentResponseDto responseDto = commentService.createComment(todoId, requestDto, userDetails.getUser());
-            return ResponseEntity.status(HttpStatus.CREATED).body(responseDto);
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body(new StatusResponseDto(HttpStatus.NOT_FOUND.value(), e.getMessage()));
-        }
+    public CommentResponseDto createComment(@PathVariable Long todoId,
+                                            @RequestBody CommentRequestDto requestDto,
+                                            @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        return commentService.createComment(todoId, requestDto, userDetails.getUser());
     }
 
     @GetMapping("/todos/{todoId}/comments")
-    public ResponseEntity<?> getComments(@PathVariable Long todoId) {
-        try {
-            List<CommentResponseDto> responseDto = commentService.getComments(todoId);
-            return ResponseEntity.ok().body(responseDto);
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body(new StatusResponseDto(HttpStatus.NOT_FOUND.value(), e.getMessage()));
-        }
+    public List<CommentResponseDto> getComments(@PathVariable Long todoId) {
+        return commentService.getComments(todoId);
     }
 
     @PatchMapping("/comments/{commentId}")
-    public ResponseEntity<?> modifyComment(@PathVariable Long commentId,
-                                           @RequestBody CommentRequestDto requestDto,
-                                           @AuthenticationPrincipal UserDetailsImpl userDetails) {
-        try {
-            CommentResponseDto responseDto = commentService.modifyComment(commentId, requestDto, userDetails.getUser());
-            return ResponseEntity.ok().body(responseDto);
-        } catch (RejectedExecutionException e) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN)
-                    .body(new StatusResponseDto(HttpStatus.FORBIDDEN.value(), e.getMessage()));
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body(new StatusResponseDto(HttpStatus.NOT_FOUND.value(), e.getMessage()));
-        }
+    public CommentResponseDto modifyComment(@PathVariable Long commentId,
+                                            @RequestBody CommentRequestDto requestDto,
+                                            @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        return commentService.modifyComment(commentId, requestDto, userDetails.getUser());
     }
 
     @DeleteMapping("/comments/{commentId}")
     public ResponseEntity<StatusResponseDto> deleteComment(@PathVariable Long commentId,
-                                           @AuthenticationPrincipal UserDetailsImpl userDetails) {
-        try {
-            commentService.deleteComment(commentId, userDetails.getUser());
-            return ResponseEntity.ok().body(new StatusResponseDto(HttpStatus.OK.value(), "댓글 삭제 성공"));
-        } catch (RejectedExecutionException e) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN)
-                    .body(new StatusResponseDto(HttpStatus.FORBIDDEN.value(), e.getMessage()));
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body(new StatusResponseDto(HttpStatus.NOT_FOUND.value(), e.getMessage()));
-        }
+                                                           @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        commentService.deleteComment(commentId, userDetails.getUser());
+        return ResponseEntity.ok().body(new StatusResponseDto("댓글 삭제 성공", HttpStatus.OK.value()));
     }
 }

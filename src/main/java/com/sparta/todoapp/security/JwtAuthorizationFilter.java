@@ -45,7 +45,8 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
                 ObjectMapper ob = new ObjectMapper();
                 response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 
-                String jsonResponse = ob.writeValueAsString(new StatusResponseDto(response.getStatus(),InvalidTokenMessage));
+                String jsonResponse = ob.
+                        writeValueAsString(new StatusResponseDto(InvalidTokenMessage, response.getStatus()));
 
                 PrintWriter writer = response.getWriter();
                 writer.println(jsonResponse);

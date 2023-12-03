@@ -5,7 +5,7 @@ import java.time.LocalDateTime;
 import lombok.Getter;
 
 @Getter
-public class TodoResponseDto extends StatusResponseDto{
+public class TodoResponseDto {
     private String title;
     private String content;
     private boolean isCompleted;

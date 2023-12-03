@@ -55,7 +55,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         response.setStatus(HttpServletResponse.SC_OK);
 
         // JSON 형식으로 응답 메시지, 상태코드 생성
-        String jsonResponse = ob.writeValueAsString(new StatusResponseDto(response.getStatus(),loginSuccessMessage));
+        String jsonResponse = ob.writeValueAsString(new StatusResponseDto(loginSuccessMessage, response.getStatus()));
 
         PrintWriter writer = response.getWriter();
         writer.println(jsonResponse);
@@ -67,7 +67,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 
         // JSON 형식으로 응답 메시지, 상태코드 생성
-        String jsonResponse = ob.writeValueAsString(new StatusResponseDto(response.getStatus(),notFoundUserMessage));
+        String jsonResponse = ob.writeValueAsString(new StatusResponseDto(notFoundUserMessage, response.getStatus()));
 
         PrintWriter writer = response.getWriter();
         writer.println(jsonResponse);

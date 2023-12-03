@@ -12,6 +12,6 @@ import lombok.Setter;
 @AllArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class StatusResponseDto {
-    private int status;
     private String message;
+    private int status;
 }

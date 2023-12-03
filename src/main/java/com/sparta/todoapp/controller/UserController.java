@@ -25,20 +25,17 @@ public class UserController {
     private static String successMessage = "가입에 성공했습니다";
 
     @PostMapping("/user/signup")
-    public ResponseEntity<Object> signup(@Valid @RequestBody SignupRequestDto requestDto, BindingResult bindingResult){
+    public ResponseEntity<StatusResponseDto> signup(@Valid @RequestBody SignupRequestDto requestDto, BindingResult bindingResult){
         if (bindingResult.hasErrors()) {
             StringBuilder message = new StringBuilder();
             for (FieldError fieldError : bindingResult.getFieldErrors()) {
                 message.append(fieldError.getDefaultMessage()).append("\n");
                 log.error(fieldError.getField() + " 필드 : " + fieldError.getDefaultMessage());
             }
-            return ResponseEntity.badRequest().body(new StatusResponseDto(HttpStatus.BAD_REQUEST.value(), message.toString()));
+            return ResponseEntity.badRequest()
+                    .body(new StatusResponseDto(message.toString(), HttpStatus.BAD_REQUEST.value()));
         }
-        try {
-            userService.signup(requestDto);
-            return ResponseEntity.ok().body(new StatusResponseDto(HttpStatus.OK.value(),successMessage));
-        } catch (IllegalArgumentException ex){
-            return ResponseEntity.badRequest().body(new StatusResponseDto(HttpStatus.BAD_REQUEST.value(), ex.getMessage()));
-        }
+        userService.signup(requestDto);
+        return ResponseEntity.ok().body(new StatusResponseDto(successMessage, HttpStatus.OK.value()));
     }
 }
