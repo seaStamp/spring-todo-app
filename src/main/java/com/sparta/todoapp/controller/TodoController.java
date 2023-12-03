@@ -32,7 +32,6 @@ public class TodoController {
     @PostMapping
     public ResponseEntity<TodoResponseDto> createTodo(@RequestBody TodoRequestDto requestDto, @AuthenticationPrincipal
     UserDetailsImpl userDetails) {
-        System.out.println("사용자 " + userDetails.getUsername());
         TodoResponseDto responseDto = todoService.createTodo(requestDto, userDetails.getUser());
         return ResponseEntity.status(HttpStatus.CREATED).body(responseDto);
     }
