@@ -49,7 +49,7 @@ class UserServiceTest {
 
     @Test
     @DisplayName("회원가입 실패 테스트 : 중복된 사용자")
-    public void signupFailTest() {
+    void signupFailTest() {
 
         //Given
         User user = new User();
