@@ -8,12 +8,12 @@ import lombok.Getter;
 @Getter
 public class CommentResponseDto {
     private String text;
-    private UserDto user;
+    private String username;
     private LocalDateTime createDate;
 
     public CommentResponseDto(Comment comment, User user){
         this.text = comment.getText();
-        this.user = new UserDto(user);
+        this.username = user.getUsername();
         this.createDate = comment.getCreatedAt();
     }
 }
