@@ -89,7 +89,7 @@
     - 선택한 댓글의 DB 저장 유무를 확인하기
     - 선택한 댓글이 있다면 댓글 삭제하고 Client 로 성공했다는 메시지, 상태코드 반환하기
 
-- [ ] ResponseEntity Global 예외처리 적용
+- [x] ResponseEntity Global 예외처리 적용
 
 -------
 ## Feeadback 수정사항
