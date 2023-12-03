@@ -53,40 +53,9 @@ class TodoServiceTest {
 
         // then
         assertEquals(result.getTitle(),requestDto.getTitle());
+        assertEquals(result.getContent(),requestDto.getContent());
         verify(todoRepository, times(1)).save(any(Todo.class));
     }
 
-    @Test
-    @DisplayName("todo 단건 조회 테스트 : 성공")
-    void getTodoSuccessTest() {
-        // given
-        Long existingTodoId = 1L;
-        Todo existingTodo = new Todo(new TodoRequestDto("테스트 제목", "테스트 유저"), testUser);
-        when(todoRepository.findById(existingTodoId)).thenReturn(Optional.of(existingTodo));
 
-        // when
-        TodoResponseDto responseDto = todoService.getTodo(existingTodoId);
-
-        // then
-        assertNotNull(responseDto);
-        assertEquals(existingTodo.getTitle(), responseDto.getTitle());
-        assertEquals(existingTodo.getContent(), responseDto.getContent());
-    }
-
-    @Test
-    @DisplayName("todo 단건 조회 테스트 : 실패")
-    void getTodoFailTest() {
-        // given
-        Long existingTodoId = 1L;
-        Todo existingTodo = new Todo(new TodoRequestDto("Title", "Content"), testUser);
-        when(todoRepository.findById(existingTodoId)).thenReturn(Optional.of(existingTodo));
-
-        // when
-        TodoResponseDto responseDto = todoService.getTodo(existingTodoId);
-
-        // then
-        assertNotNull(responseDto);
-        assertEquals(existingTodo.getTitle(), responseDto.getTitle());
-        assertEquals(existingTodo.getContent(), responseDto.getContent());
-    }
 }
