@@ -15,4 +15,8 @@ public abstract class Timestamped {
     @Column(updatable = false)
     @Temporal(TemporalType.TIMESTAMP)
     private LocalDateTime createdAt;
+
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
+    }
 }
