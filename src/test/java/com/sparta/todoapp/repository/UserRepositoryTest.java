@@ -17,10 +17,23 @@ class UserRepositoryTest {
     private UserRepository userRepository;
 
     @Test
+    @DisplayName("유저 db에 저장하기")
+    void saveUserTest(){
+        // given
+        User newUser =
+
+        // when
+
+        // then
+    }
+    @Test
     @DisplayName("유저명으로 유저 찾기 - 성공")
     void findByUsernameSuccessTest() {
         // given
-        User testUser = new User("testUser", "password");
+        User testUser = User.builder()
+                .username("testUser")
+                .password("password")
+                .build();
         userRepository.save(testUser);
 
         // when
@@ -33,7 +46,7 @@ class UserRepositoryTest {
 
     @Test
     @DisplayName("유저명으로 유저 찾기 - 실패")
-    void findByUsernameFailureTest() {
+    void findByUsernameFailTest() {
         // given
         User testUser = User.builder()
                 .username("testUser")
