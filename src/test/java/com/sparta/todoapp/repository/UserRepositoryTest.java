@@ -20,12 +20,19 @@ class UserRepositoryTest {
     @DisplayName("유저 db에 저장하기")
     void saveUserTest(){
         // given
-        User newUser =
+        User newUser = User.builder()
+                .username("newUser")
+                .password("password")
+                .build();
 
         // when
+        User saveUser = userRepository.save(newUser);
 
         // then
+        assertEquals("newUser",saveUser.getUsername());
+        assertEquals("password",saveUser.getPassword());
     }
+
     @Test
     @DisplayName("유저명으로 유저 찾기 - 성공")
     void findByUsernameSuccessTest() {
