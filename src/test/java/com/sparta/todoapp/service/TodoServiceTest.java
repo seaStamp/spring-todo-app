@@ -100,7 +100,7 @@ class TodoServiceTest {
     @DisplayName("Todo 유효성 테스트")
     class ValidateTodo {
         @Test
-        @DisplayName("성공 - 수정/삭제 하려는 Todo가 자신의 할일 Todo일때")
+        @DisplayName("성공 - 수정하려는 Todo가 자신의 할일 Todo일때")
         void validateTodoSuccessTest() {
             // given
             Long existingTodoId = 4L;
@@ -121,8 +121,8 @@ class TodoServiceTest {
         }
 
         @Test
-        @DisplayName("실패 - 수정/삭제 하려는 Todo가 존재하지 않음")
-        void checkCardTestFailCardListIsEmpty() {
+        @DisplayName("실패 - 수정하려는 Todo가 존재하지 않음")
+        void validateTodoFailTest_NotFoundTodo() {
             // given
             Long nonExistingTodoId = 4L; //
             List<Todo> todoList = new ArrayList<>();
@@ -136,8 +136,8 @@ class TodoServiceTest {
         }
 
         @Test
-        @DisplayName("실패 - 수정/삭제 하려는 Todo의 작성자가 아닐 때")
-        void checkCardTestFailCardIsNotMine() {
+        @DisplayName("실패 - 수정하려는 Todo의 작성자가 아닐 때")
+        void validateTodoFailTest_NotAuthor() {
             // given
             User otherUser = new User("otherUser", "password");
             otherUser.setId(12L);

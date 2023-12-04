@@ -54,7 +54,7 @@ public class CommentService {
         commentRepository.delete(comment);
     }
 
-    private Comment findComment(Long commentId, User user) {
+    public Comment findComment(Long commentId, User user) {
         Comment comment = commentRepository.findById(commentId)
                 .orElseThrow(() -> new NotFoundException("존재하지 않는 댓글 입니다."));
         if(!user.getId().equals(comment.getUser().getId())){
