@@ -8,6 +8,7 @@ import com.sparta.todoapp.entity.User;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -51,6 +52,52 @@ class TodoRepositoryTest {
         assertEquals(requestDto.getContent(), saveTodo.getContent());
     }
 
+    @Nested
+    @DisplayName("Todo Id로 가져오기")
+    class FindById{
+        @Test
+        @DisplayName("성공")
+        void FindByIdSuccess(){
+            // given
+            TodoRequestDto requestDto = new TodoRequestDto("할일 제목 ", "할일 내용 ");
+            Todo todo = Todo.builder()
+                    .requestDto(requestDto)
+                    .user(testUser)
+                    .build();
+            todoRepository.save(todo);
+
+            // when
+            Optional<Todo> foundTodo = todoRepository.findById(todo.getId());
+
+            // then
+            assertTrue(foundTodo.isPresent());
+            assertEquals(todo.getId(),foundTodo.get().getId());
+        }
+
+        @Test
+        @DisplayName("실패")
+        void FindByIdFail(){
+            // given
+            User otherUser = new User("otherUser", "password");
+            userRepository.save(otherUser);
+            Long wrongTodoId = 100L;
+
+            TodoRequestDto requestDto = new TodoRequestDto("할일 제목 ", "할일 내용 ");
+            Todo todo = Todo.builder()
+                    .requestDto(requestDto)
+                    .user(testUser)
+                    .build();
+            todoRepository.save(todo);
+
+
+            // when
+            Optional<Todo> foundTodo = todoRepository.findById(wrongTodoId);
+
+            // then
+            assertFalse(foundTodo.isPresent());
+        }
+    }
+
 
     @Nested
     @DisplayName("특정 사용자의 할일 늦게 생성된 순으로 가져오기")
@@ -63,7 +110,6 @@ class TodoRepositoryTest {
             for (int i = 0; i < 3; i++) {
                 TodoRequestDto requestDto = new TodoRequestDto("할일 제목 " + i, "할일 내용 " + i);
                 Todo todo = new Todo(requestDto, testUser);
-                todo.setId((long) i + 1);
                 todo.setCreatedAt(LocalDateTime.now());
                 todoList.add(todoRepository.save(todo));
             }
@@ -87,7 +133,6 @@ class TodoRepositoryTest {
             for (int i = 0; i < 4; i++) {
                 TodoRequestDto requestDto = new TodoRequestDto("할일 제목 " + i, "할일 내용 " + i);
                 Todo todo = new Todo(requestDto, testUser);
-                todo.setId((long) i + 1);
                 todo.setCreatedAt(LocalDateTime.now());
                 todoList.add(todoRepository.save(todo));
             }
