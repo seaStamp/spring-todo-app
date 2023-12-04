@@ -11,7 +11,6 @@ import static org.mockito.Mockito.verify;
 import com.sparta.todoapp.dto.CommentRequestDto;
 import com.sparta.todoapp.dto.CommentResponseDto;
 import com.sparta.todoapp.dto.TodoRequestDto;
-import com.sparta.todoapp.dto.TodoResponseDto;
 import com.sparta.todoapp.entity.Comment;
 import com.sparta.todoapp.entity.Todo;
 import com.sparta.todoapp.entity.User;

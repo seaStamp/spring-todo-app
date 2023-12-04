@@ -11,7 +11,7 @@ import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.shadow.com.univocity.parsers.annotations.Nested;
+import org.junit.jupiter.api.Nested;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.context.ActiveProfiles;
@@ -33,9 +33,28 @@ class TodoRepositoryTest {
         testUser = userRepository.save(testUser);
     }
 
-//    @Nested
-//    @DisplayName("특정 사용자의 할일 늦게 생성된 순으로 가져오기")
-//    class FindAllByUserAndIsCompletedOrderByCreatedAtDescTest {
+    @Test
+    @DisplayName("Todo db에 저장하기")
+    void saveTodoTest() {
+        // given
+        TodoRequestDto requestDto = new TodoRequestDto("할일 제목 ", "할일 내용 ");
+        Todo newTodo = Todo.builder()
+                .requestDto(requestDto)
+                .user(testUser)
+                .build();
+
+        // when
+        Todo saveTodo = todoRepository.save(newTodo);
+
+        // then
+        assertEquals(requestDto.getTitle(), saveTodo.getTitle());
+        assertEquals(requestDto.getContent(), saveTodo.getContent());
+    }
+
+
+    @Nested
+    @DisplayName("특정 사용자의 할일 늦게 생성된 순으로 가져오기")
+     class FindAllByUserAndIsCompletedOrderByCreatedAtDescTest {
         @Test
         @DisplayName("완료되지 않은 할일 가져오기")
         void FindIsCompletedFalse() {
@@ -83,5 +102,5 @@ class TodoRepositoryTest {
             assertEquals("할일 제목 2", completeTodos.get(0).getTitle());
             assertEquals("할일 제목 0", completeTodos.get(1).getTitle());
         }
-//    }
+    }
 }
