@@ -33,13 +33,16 @@ class CommentRepositoryTest {
 
     private User testUser;
     private Todo testTodo;
+
     @BeforeEach
     void setUp() {
         testUser = new User("testUser", "password");
         testUser = userRepository.save(testUser);
-
-        TodoRequestDto requestDto = new TodoRequestDto("할일 제목", "할일 내용");
-        testTodo = todoRepository.save(new Todo(requestDto,testUser));
+        TodoRequestDto requestDto = TodoRequestDto.builder()
+                .title("할일 제목")
+                .content("할일내용")
+                .build();
+        testTodo = todoRepository.save(new Todo(requestDto, testUser));
     }
 
     @Nested
@@ -51,7 +54,8 @@ class CommentRepositoryTest {
             // given
             List<Comment> comments = new ArrayList<>();
             for (int i = 0; i < 3; i++) {
-                CommentRequestDto requestDto = new CommentRequestDto("댓글 내용 " + i);
+                CommentRequestDto requestDto = new CommentRequestDto();
+                requestDto.setText("댓글 내용 " + i);
                 Comment comment = new Comment(requestDto, testUser, testTodo);
                 comment.setCreatedAt(LocalDateTime.now());
                 comments.add(commentRepository.save(comment));

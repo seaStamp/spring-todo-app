@@ -5,9 +5,10 @@ import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.Setter;
 
 @Getter
-@AllArgsConstructor
+@Setter
 public class SignupRequestDto {
     @NotBlank
     @Size(min = 4, max = 10, message = "4-10글자로 username을 설정해주세요")
