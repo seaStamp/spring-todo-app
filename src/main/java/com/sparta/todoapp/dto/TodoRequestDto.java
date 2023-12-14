@@ -8,8 +8,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-@Builder
-@EqualsAndHashCode
+@AllArgsConstructor
 public class TodoRequestDto {
     private String title;
     private String content;

@@ -38,10 +38,7 @@ class CommentRepositoryTest {
     void setUp() {
         testUser = new User("testUser", "password");
         testUser = userRepository.save(testUser);
-        TodoRequestDto requestDto = TodoRequestDto.builder()
-                .title("할일 제목")
-                .content("할일내용")
-                .build();
+        TodoRequestDto requestDto = new TodoRequestDto("할일 제목", "할일내용");
         testTodo = todoRepository.save(new Todo(requestDto, testUser));
     }
 
