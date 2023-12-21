@@ -1,8 +1,8 @@
 package com.sparta.todoapp.dto;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
 
+import com.sparta.todoapp.domain.user.dto.request.SignupRequestDto;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;

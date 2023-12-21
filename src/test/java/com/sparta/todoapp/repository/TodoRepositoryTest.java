@@ -2,9 +2,11 @@ package com.sparta.todoapp.repository;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import com.sparta.todoapp.dto.TodoRequestDto;
-import com.sparta.todoapp.entity.Todo;
-import com.sparta.todoapp.entity.User;
+import com.sparta.todoapp.domain.todo.dto.request.TodoRequestDto;
+import com.sparta.todoapp.domain.todo.entity.Todo;
+import com.sparta.todoapp.domain.todo.repository.TodoRepository;
+import com.sparta.todoapp.domain.user.entity.User;
+import com.sparta.todoapp.domain.user.repository.UserRepository;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;

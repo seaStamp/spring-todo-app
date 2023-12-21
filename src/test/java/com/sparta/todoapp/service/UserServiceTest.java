@@ -7,9 +7,10 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
-import com.sparta.todoapp.dto.SignupRequestDto;
-import com.sparta.todoapp.entity.User;
-import com.sparta.todoapp.repository.UserRepository;
+import com.sparta.todoapp.domain.user.dto.request.SignupRequestDto;
+import com.sparta.todoapp.domain.user.entity.User;
+import com.sparta.todoapp.domain.user.repository.UserRepository;
+import com.sparta.todoapp.domain.user.service.UserService;
 import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

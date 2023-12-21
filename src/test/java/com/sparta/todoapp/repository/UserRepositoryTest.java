@@ -2,7 +2,8 @@ package com.sparta.todoapp.repository;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import com.sparta.todoapp.entity.User;
+import com.sparta.todoapp.domain.user.entity.User;
+import com.sparta.todoapp.domain.user.repository.UserRepository;
 import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
