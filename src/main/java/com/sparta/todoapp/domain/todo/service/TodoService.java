@@ -48,7 +48,7 @@ public interface TodoService {
     TodoResponseDto updateTodo(Long todoId, TodoRequestDto requestDto, User user);
 
     /**
-     * Todo 완료처리
+     * Todo완료 처리
      *
      * @param todoId 완료처리할 게시글 id
      * @param user   완료처리 요청자
@@ -64,4 +64,12 @@ public interface TodoService {
      * @return 찾은 Todo게시글 반환
      */
     Todo validateTodo(Long todoId, User user);
+
+    /**
+     * Todo게시글 제목 또는 내용 검색
+     *
+     * @param keyword 찾을 키워드
+     * @return 찾은 Todo게시글 반환
+     */
+    Map<UserDto, List<TodoResponseDto>> searchByContainsTitleOrContent(String keyword);
 }

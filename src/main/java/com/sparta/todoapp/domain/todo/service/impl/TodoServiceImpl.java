@@ -95,4 +95,22 @@ public class TodoServiceImpl implements TodoService {
 
         return todo;
     }
+
+    @Override
+    public Map<UserDto, List<TodoResponseDto>> searchByContainsTitleOrContent(
+        final String keyword) {
+        Map<UserDto, List<TodoResponseDto>> userTodoMap = new HashMap<>();
+
+        List<User> userList = userRepository.findAll();
+        for (User user : userList) {
+            UserDto userDto = new UserDto(user);
+            // 사용자의 할일목록을 내림차순으로 가져옴
+            List<TodoResponseDto> todolistDto = convertTodoListToResponseDtoList(
+                todoRepository.searchByUserAndContainsTitleOrMember(keyword, user.getUsername()));
+            if (!todolistDto.isEmpty()) {
+                userTodoMap.put(userDto, todolistDto);
+            }
+        }
+        return userTodoMap;
+    }
 }

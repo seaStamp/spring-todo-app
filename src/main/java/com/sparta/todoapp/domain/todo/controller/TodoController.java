@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RequestMapping("/api/todos")
@@ -65,5 +66,17 @@ public class TodoController {
         @AuthenticationPrincipal UserDetailsImpl userDetails) {
         TodoResponseDto responseDto = todoService.completeTodo(todoId, userDetails.getUser());
         return ResponseEntity.ok(responseDto);
+    }
+
+    @GetMapping("/search")
+    public ResponseEntity<List<TodoListResponseDto>> searchTodos(
+        @RequestParam(value = "keyword") String keyword) {
+        List<TodoListResponseDto> response = new ArrayList<>();
+        Map<UserDto, List<TodoResponseDto>> responseDtoMap = todoService.searchByContainsTitleOrContent(
+            keyword);
+
+        responseDtoMap.forEach((key, value) -> response.add(new TodoListResponseDto(key, value)));
+
+        return ResponseEntity.ok(response);
     }
 }
