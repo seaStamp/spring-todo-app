@@ -3,6 +3,7 @@ package com.sparta.todoapp.global.security;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sparta.todoapp.global.jwt.JwtUtil;
 import com.sparta.todoapp.global.security.code.SecurityStatusCode;
+import com.sparta.todoapp.global.security.response.StatusResponse;
 import io.jsonwebtoken.Claims;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -46,7 +47,7 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
                 response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 
                 String jsonResponse = ob.
-                    writeValueAsString(SecurityStatusCode.INVALID_TOKEN);
+                    writeValueAsString(new StatusResponse(SecurityStatusCode.INVALID_TOKEN));
 
                 PrintWriter writer = response.getWriter();
                 writer.println(jsonResponse);

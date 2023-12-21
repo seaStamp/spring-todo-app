@@ -6,6 +6,7 @@ import com.sparta.todoapp.domain.comment.service.impl.CommentServiceImpl;
 import com.sparta.todoapp.global.security.UserDetailsImpl;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -25,22 +26,27 @@ public class CommentController {
     private final CommentServiceImpl commentService;
 
     @PostMapping("/todos/{todoId}/comments")
-    public CommentResponseDto createComment(@PathVariable Long todoId,
+    public ResponseEntity<CommentResponseDto> createComment(@PathVariable Long todoId,
         @RequestBody CommentRequestDto requestDto,
         @AuthenticationPrincipal UserDetailsImpl userDetails) {
-        return commentService.createComment(todoId, requestDto, userDetails.getUser());
+        CommentResponseDto responseDto = commentService.createComment(todoId, requestDto,
+            userDetails.getUser());
+        return ResponseEntity.status(HttpStatus.CREATED).body(responseDto);
     }
 
     @GetMapping("/todos/{todoId}/comments")
-    public List<CommentResponseDto> getComments(@PathVariable Long todoId) {
-        return commentService.getComments(todoId);
+    public ResponseEntity<List<CommentResponseDto>> getComments(@PathVariable Long todoId) {
+        List<CommentResponseDto> responseDtos = commentService.getComments(todoId);
+        return ResponseEntity.ok(responseDtos);
     }
 
     @PatchMapping("/comments/{commentId}")
-    public CommentResponseDto modifyComment(@PathVariable Long commentId,
+    public ResponseEntity<CommentResponseDto> modifyComment(@PathVariable Long commentId,
         @RequestBody CommentRequestDto requestDto,
         @AuthenticationPrincipal UserDetailsImpl userDetails) {
-        return commentService.modifyComment(commentId, requestDto, userDetails.getUser());
+        CommentResponseDto responseDto = commentService.modifyComment(commentId, requestDto,
+            userDetails.getUser());
+        return ResponseEntity.ok(responseDto);
     }
 
     @DeleteMapping("/comments/{commentId}")
