@@ -1,8 +1,8 @@
 package com.sparta.todoapp.global.security;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.sparta.todoapp.global.exception.StatusResponseDto;
 import com.sparta.todoapp.global.jwt.JwtUtil;
+import com.sparta.todoapp.global.security.code.SecurityStatusCode;
 import io.jsonwebtoken.Claims;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -24,7 +24,6 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
 
     private final JwtUtil jwtUtil;
     private final UserDetailsServiceImpl userDetailsService;
-    private final static String InvalidTokenMessage = "토큰이 유효하지 않습니다.";
 
     public JwtAuthorizationFilter(JwtUtil jwtUtil, UserDetailsServiceImpl userDetailsService) {
         this.jwtUtil = jwtUtil;
@@ -32,8 +31,9 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
     }
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
-            throws ServletException, IOException {
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
+        FilterChain filterChain)
+        throws ServletException, IOException {
 
         String tokenValue = jwtUtil.getJwtFromHeader(request);
 
@@ -46,7 +46,7 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
                 response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 
                 String jsonResponse = ob.
-                        writeValueAsString(new StatusResponseDto(InvalidTokenMessage, response.getStatus()));
+                    writeValueAsString(SecurityStatusCode.INVALID_TOKEN);
 
                 PrintWriter writer = response.getWriter();
                 writer.println(jsonResponse);

@@ -11,14 +11,14 @@ import static org.mockito.Mockito.verify;
 import com.sparta.todoapp.domain.todo.dto.request.TodoRequestDto;
 import com.sparta.todoapp.domain.todo.dto.response.TodoResponseDto;
 import com.sparta.todoapp.domain.todo.entity.Todo;
+import com.sparta.todoapp.domain.todo.exception.ForbiddenAccessTodoException;
+import com.sparta.todoapp.domain.todo.exception.NotFoundTodoException;
+import com.sparta.todoapp.domain.todo.repository.TodoRepository;
 import com.sparta.todoapp.domain.todo.service.TodoService;
 import com.sparta.todoapp.domain.user.entity.User;
-import com.sparta.todoapp.global.exception.NotFoundException;
-import com.sparta.todoapp.domain.todo.repository.TodoRepository;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.concurrent.RejectedExecutionException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -30,6 +30,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
 class TodoServiceTest {
+
     @InjectMocks
     private TodoService todoService;
 
@@ -37,6 +38,7 @@ class TodoServiceTest {
     private TodoRepository todoRepository;
 
     private User testUser;
+
     @BeforeEach
     void setUp() {
         testUser = new User("testUser", "password");
@@ -56,14 +58,15 @@ class TodoServiceTest {
         TodoResponseDto result = todoService.createTodo(requestDto, testUser);
 
         // then
-        assertEquals(result.getTitle(),requestDto.getTitle());
-        assertEquals(result.getContent(),requestDto.getContent());
+        assertEquals(result.getTitle(), requestDto.getTitle());
+        assertEquals(result.getContent(), requestDto.getContent());
         verify(todoRepository, times(1)).save(any(Todo.class));
     }
 
     @Nested
     @DisplayName("Todo 단건 조회 테스트")
     class GetTodoTest {
+
         @Test
         @DisplayName("성공 - 존재하는 todoId")
         void getTodoSuccessTest() {
@@ -88,17 +91,16 @@ class TodoServiceTest {
             Long nonExistingTodoId = 1L;
             given(todoRepository.findById(nonExistingTodoId)).willReturn(Optional.empty());
 
-            // when
-            Exception exception = assertThrows(NotFoundException.class, () -> todoService.getTodo(nonExistingTodoId));
-
-            // then
-            assertEquals("존재하지 않는 할일 ID 입니다", exception.getMessage());
+            // when - then
+            Exception exception = assertThrows(NotFoundTodoException.class,
+                () -> todoService.getTodo(nonExistingTodoId));
         }
     }
 
     @Nested
     @DisplayName("Todo 유효성 테스트")
     class ValidateTodo {
+
         @Test
         @DisplayName("성공 - 수정하려는 Todo가 자신의 할일 Todo일때")
         void validateTodoSuccessTest() {
@@ -127,12 +129,9 @@ class TodoServiceTest {
             Long nonExistingTodoId = 4L; //
             List<Todo> todoList = new ArrayList<>();
 
-            // when
-            Exception exception = assertThrows(NotFoundException.class,
-                    () -> todoService.validateTodo(nonExistingTodoId, testUser));
-
-            // then
-            assertEquals("존재하지 않는 할일 ID입니다.", exception.getMessage());
+            // when-then
+            Exception exception = assertThrows(NotFoundTodoException.class,
+                () -> todoService.validateTodo(nonExistingTodoId, testUser));
         }
 
         @Test
@@ -152,12 +151,9 @@ class TodoServiceTest {
 
             given(todoRepository.findById(existingTodoId)).willReturn(Optional.of(todoList.get(0)));
 
-            // when
-            Exception exception = assertThrows(RejectedExecutionException.class,
-                    () -> todoService.validateTodo(existingTodoId, otherUser));
-
-            // then
-            assertEquals("작성자만 수정이 가능합니다.", exception.getMessage());
+            // when - then
+            Exception exception = assertThrows(ForbiddenAccessTodoException.class,
+                () -> todoService.validateTodo(existingTodoId, otherUser));
         }
     }
 }

@@ -2,10 +2,10 @@ package com.sparta.todoapp.domain.todo.controller;
 
 import com.sparta.todoapp.domain.todo.dto.request.TodoRequestDto;
 import com.sparta.todoapp.domain.todo.dto.response.TodoListResponseDto;
-import com.sparta.todoapp.domain.user.dto.response.UserDto;
 import com.sparta.todoapp.domain.todo.dto.response.TodoResponseDto;
-import com.sparta.todoapp.global.security.UserDetailsImpl;
 import com.sparta.todoapp.domain.todo.service.TodoService;
+import com.sparta.todoapp.domain.user.dto.response.UserDto;
+import com.sparta.todoapp.global.security.UserDetailsImpl;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -25,11 +25,12 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequiredArgsConstructor
 public class TodoController {
+
     private final TodoService todoService;
 
     @PostMapping
-    public ResponseEntity<TodoResponseDto> createTodo(@RequestBody TodoRequestDto requestDto, @AuthenticationPrincipal
-    UserDetailsImpl userDetails) {
+    public ResponseEntity<TodoResponseDto> createTodo(@RequestBody TodoRequestDto requestDto,
+        @AuthenticationPrincipal UserDetailsImpl userDetails) {
         TodoResponseDto responseDto = todoService.createTodo(requestDto, userDetails.getUser());
         return ResponseEntity.status(HttpStatus.CREATED).body(responseDto);
     }
@@ -51,14 +52,14 @@ public class TodoController {
 
     @PatchMapping("/{todoId}")
     public TodoResponseDto updateTodo(@PathVariable Long todoId,
-                                      @RequestBody TodoRequestDto requestDto,
-                                      @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        @RequestBody TodoRequestDto requestDto,
+        @AuthenticationPrincipal UserDetailsImpl userDetails) {
         return todoService.updateTodo(todoId, requestDto, userDetails.getUser());
     }
 
     @PatchMapping("/{todoId}/complete")
     public TodoResponseDto completeTodo(@PathVariable Long todoId,
-                                        @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        @AuthenticationPrincipal UserDetailsImpl userDetails) {
         return todoService.completeTodo(todoId, userDetails.getUser());
     }
 }

@@ -2,16 +2,17 @@ package com.sparta.todoapp.domain.todo.service;
 
 import com.sparta.todoapp.domain.todo.dto.request.TodoRequestDto;
 import com.sparta.todoapp.domain.todo.dto.response.TodoResponseDto;
+import com.sparta.todoapp.domain.todo.entity.Todo;
+import com.sparta.todoapp.domain.todo.exception.ForbiddenAccessTodoException;
+import com.sparta.todoapp.domain.todo.exception.NotFoundTodoException;
+import com.sparta.todoapp.domain.todo.exception.TodoErrorCode;
 import com.sparta.todoapp.domain.todo.repository.TodoRepository;
 import com.sparta.todoapp.domain.user.dto.response.UserDto;
 import com.sparta.todoapp.domain.user.entity.User;
 import com.sparta.todoapp.domain.user.repository.UserRepository;
-import com.sparta.todoapp.domain.todo.entity.Todo;
-import com.sparta.todoapp.global.exception.NotFoundException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.RejectedExecutionException;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -21,6 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 @Transactional
 public class TodoService {
+
     private final TodoRepository todoRepository;
     private final UserRepository userRepository;
 
@@ -32,7 +34,7 @@ public class TodoService {
     @Transactional(readOnly = true)
     public TodoResponseDto getTodo(Long todoId) {
         Todo todo = todoRepository.findById(todoId)
-                .orElseThrow(() -> new NotFoundException("존재하지 않는 할일 ID 입니다"));
+            .orElseThrow(() -> new NotFoundTodoException(TodoErrorCode.NOT_FOUND_TODO));
         return new TodoResponseDto(todo);
     }
 
@@ -45,9 +47,9 @@ public class TodoService {
             UserDto userDto = new UserDto(user);
             // 사용자의 할일목록을 내림차순으로 가져옴
             List<TodoResponseDto> todolistDto = convertTodoListToResponseDtoList(
-                    todoRepository.findAllByUserAndIsCompletedOrderByCreatedAtDesc(user, false));
+                todoRepository.findAllByUserAndIsCompletedOrderByCreatedAtDesc(user, false));
             todolistDto.addAll(convertTodoListToResponseDtoList(
-                    todoRepository.findAllByUserAndIsCompletedOrderByCreatedAtDesc(user,true)));
+                todoRepository.findAllByUserAndIsCompletedOrderByCreatedAtDesc(user, true)));
             userTodoMap.put(userDto, todolistDto);
         }
         return userTodoMap;
@@ -55,8 +57,8 @@ public class TodoService {
 
     public List<TodoResponseDto> convertTodoListToResponseDtoList(List<Todo> todoList) {
         return todoList.stream()
-                .map(TodoResponseDto::new)
-                .collect(Collectors.toList());
+            .map(TodoResponseDto::new)
+            .collect(Collectors.toList());
     }
 
     public TodoResponseDto updateTodo(Long todoId, TodoRequestDto requestDto, User user) {
@@ -75,12 +77,12 @@ public class TodoService {
         Todo todo;
 
         // 해당하는 todo가 존재하는지 확인
-         todo = todoRepository.findById(todoId).orElseThrow(() ->
-                new NotFoundException("존재하지 않는 할일 ID입니다."));
+        todo = todoRepository.findById(todoId).orElseThrow(() ->
+            new NotFoundTodoException(TodoErrorCode.NOT_FOUND_TODO));
 
         // 작성자가 맞는지 확인
-        if (!(todo.getUser().getId().equals(user.getId()))){
-            throw new RejectedExecutionException("작성자만 수정이 가능합니다.");
+        if (!(todo.getUser().getId().equals(user.getId()))) {
+            throw new ForbiddenAccessTodoException(TodoErrorCode.FORBIDDEN_ACCESS);
         }
 
         return todo;

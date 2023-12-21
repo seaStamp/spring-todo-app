@@ -8,20 +8,21 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
-import com.sparta.todoapp.domain.comment.service.CommentService;
 import com.sparta.todoapp.domain.comment.dto.request.CommentRequestDto;
 import com.sparta.todoapp.domain.comment.dto.response.CommentResponseDto;
-import com.sparta.todoapp.domain.todo.dto.request.TodoRequestDto;
 import com.sparta.todoapp.domain.comment.entity.Comment;
-import com.sparta.todoapp.domain.todo.entity.Todo;
-import com.sparta.todoapp.domain.user.entity.User;
-import com.sparta.todoapp.global.exception.NotFoundException;
+import com.sparta.todoapp.domain.comment.exception.ForbiddenAccessCommentException;
+import com.sparta.todoapp.domain.comment.exception.NotFoundCommentException;
 import com.sparta.todoapp.domain.comment.repository.CommentRepository;
+import com.sparta.todoapp.domain.comment.service.CommentService;
+import com.sparta.todoapp.domain.todo.dto.request.TodoRequestDto;
+import com.sparta.todoapp.domain.todo.entity.Todo;
+import com.sparta.todoapp.domain.todo.exception.NotFoundTodoException;
 import com.sparta.todoapp.domain.todo.repository.TodoRepository;
+import com.sparta.todoapp.domain.user.entity.User;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.concurrent.RejectedExecutionException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -33,6 +34,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
 class CommentServiceTest {
+
     @InjectMocks
     private CommentService commentService;
 
@@ -56,6 +58,7 @@ class CommentServiceTest {
     @Nested
     @DisplayName("Comment 생성 테스트")
     class CreateComment {
+
         @Test
         @DisplayName("성공 - 유효한 TodoId")
         void createCommentSuccessTest() {
@@ -67,7 +70,8 @@ class CommentServiceTest {
             given(commentRepository.save(any())).willReturn(comment);
 
             // when
-            CommentResponseDto result = commentService.createComment(existingTodoId, requestDto, testUser);
+            CommentResponseDto result = commentService.createComment(existingTodoId, requestDto,
+                testUser);
 
             // then
             assertEquals(requestDto.getText(), result.getText());
@@ -85,11 +89,10 @@ class CommentServiceTest {
             given(todoRepository.findById(existingTodoId)).willReturn(Optional.empty());
 
             // when
-            Exception exception = assertThrows(NotFoundException.class,
-                    () -> commentService.createComment(existingTodoId, requestDto, testUser));
+            Exception exception = assertThrows(NotFoundTodoException.class,
+                () -> commentService.createComment(existingTodoId, requestDto, testUser));
 
             // then
-            assertEquals("존재하지 않는 todo 입니다.", exception.getMessage());
             verify(todoRepository, times(1)).findById(any());
             verify(commentRepository, never()).save(any(Comment.class));
         }
@@ -97,7 +100,8 @@ class CommentServiceTest {
 
     @Nested
     @DisplayName("Comment 유효성 테스트")
-    class FindComment{
+    class FindComment {
+
         @Test
         @DisplayName("성공 - 수정/삭제 하려는 Comment가 존재하고, 자신의 Comment일때")
         void findCommentSuccessTest() {
@@ -110,7 +114,8 @@ class CommentServiceTest {
                 comment.setId((long) i + 1);
                 commentList.add(comment);
             }
-            given(commentRepository.findById(existingCommentId)).willReturn(Optional.of(commentList.get(3)));
+            given(commentRepository.findById(existingCommentId)).willReturn(
+                Optional.of(commentList.get(3)));
 
             // when
             Comment result = commentService.findComment(existingCommentId, testUser);
@@ -126,12 +131,9 @@ class CommentServiceTest {
             Long nonExistingCommentId = 4L; //
             List<Comment> commentList = new ArrayList<>();
 
-            // when
-            Exception exception = assertThrows(NotFoundException.class,
-                    () -> commentService.findComment(nonExistingCommentId, testUser));
-
-            // then
-            assertEquals("존재하지 않는 댓글 입니다.", exception.getMessage());
+            // when - then
+            Exception exception = assertThrows(NotFoundCommentException.class,
+                () -> commentService.findComment(nonExistingCommentId, testUser));
         }
 
         @Test
@@ -149,14 +151,12 @@ class CommentServiceTest {
                 commentList.add(comment);
             }
 
-            given(commentRepository.findById(existingCommentId)).willReturn(Optional.of(commentList.get(0)));
+            given(commentRepository.findById(existingCommentId)).willReturn(
+                Optional.of(commentList.get(0)));
 
-            // when
-            Exception exception = assertThrows(RejectedExecutionException.class,
-                    () -> commentService.findComment(existingCommentId, otherUser));
-
-            // then
-            assertEquals("댓글 작성자만 삭제 or 수정이 가능 합니다.", exception.getMessage());
+            // when - then
+            Exception exception = assertThrows(ForbiddenAccessCommentException.class,
+                () -> commentService.findComment(existingCommentId, otherUser));
         }
     }
 }

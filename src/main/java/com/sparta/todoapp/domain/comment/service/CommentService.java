@@ -3,13 +3,16 @@ package com.sparta.todoapp.domain.comment.service;
 import com.sparta.todoapp.domain.comment.dto.request.CommentRequestDto;
 import com.sparta.todoapp.domain.comment.dto.response.CommentResponseDto;
 import com.sparta.todoapp.domain.comment.entity.Comment;
+import com.sparta.todoapp.domain.comment.exception.CommentErrorCode;
+import com.sparta.todoapp.domain.comment.exception.ForbiddenAccessCommentException;
+import com.sparta.todoapp.domain.comment.exception.NotFoundCommentException;
 import com.sparta.todoapp.domain.comment.repository.CommentRepository;
+import com.sparta.todoapp.domain.todo.entity.Todo;
+import com.sparta.todoapp.domain.todo.exception.NotFoundTodoException;
+import com.sparta.todoapp.domain.todo.exception.TodoErrorCode;
 import com.sparta.todoapp.domain.todo.repository.TodoRepository;
 import com.sparta.todoapp.domain.user.entity.User;
-import com.sparta.todoapp.domain.todo.entity.Todo;
-import com.sparta.todoapp.global.exception.NotFoundException;
 import java.util.List;
-import java.util.concurrent.RejectedExecutionException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,13 +21,14 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 @Transactional
 public class CommentService {
+
     private final CommentRepository commentRepository;
     private final TodoRepository todoRepository;
 
     public CommentResponseDto createComment(Long todoId, CommentRequestDto requestDto, User user) {
         // 해당 Todo가 있는지 확인
         Todo todo = todoRepository.findById(todoId)
-                .orElseThrow(() -> new NotFoundException("존재하지 않는 todo 입니다."));
+            .orElseThrow(() -> new NotFoundTodoException(TodoErrorCode.NOT_FOUND_TODO));
         Comment comment = new Comment(requestDto, user, todo);
         commentRepository.save(comment);
         return new CommentResponseDto(comment);
@@ -33,13 +37,15 @@ public class CommentService {
     @Transactional(readOnly = false)
     public List<CommentResponseDto> getComments(Long todoId) {
         // 해당 Todo가 있는지 확인
-        todoRepository.findById(todoId).orElseThrow(() -> new NotFoundException("존재하지 않는 todo 입니다."));
+        todoRepository.findById(todoId)
+            .orElseThrow(() -> new NotFoundTodoException(TodoErrorCode.NOT_FOUND_TODO));
 
         List<Comment> commentList = commentRepository.findAllByTodoIdOrderByCreatedAt(todoId);
         return commentList.stream().map(CommentResponseDto::new).toList();
     }
 
-    public CommentResponseDto modifyComment(Long commentId, CommentRequestDto requestDto, User user) {
+    public CommentResponseDto modifyComment(Long commentId, CommentRequestDto requestDto,
+        User user) {
         // comment가 있는지 확인 + 작성자가 맞는지 확인
         Comment comment = findComment(commentId, user);
 
@@ -56,9 +62,9 @@ public class CommentService {
 
     public Comment findComment(Long commentId, User user) {
         Comment comment = commentRepository.findById(commentId)
-                .orElseThrow(() -> new NotFoundException("존재하지 않는 댓글 입니다."));
-        if(!user.getId().equals(comment.getUser().getId())){
-            throw new RejectedExecutionException("댓글 작성자만 삭제 or 수정이 가능 합니다.");
+            .orElseThrow(() -> new NotFoundCommentException(CommentErrorCode.NOT_FOUND_COMMENT));
+        if (!user.getId().equals(comment.getUser().getId())) {
+            throw new ForbiddenAccessCommentException(CommentErrorCode.FORBIDDEN_ACCESS);
         }
         return comment;
     }
