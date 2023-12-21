@@ -1,6 +1,11 @@
 package com.sparta.todoapp.global.jwt;
 
-import io.jsonwebtoken.*;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.MalformedJwtException;
+import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.UnsupportedJwtException;
 import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
 import jakarta.servlet.http.HttpServletRequest;
@@ -15,6 +20,7 @@ import org.springframework.util.StringUtils;
 @Slf4j(topic = "JwtUtil")
 @Component
 public class JwtUtil {
+
     // Header KEY 값
     public static final String AUTHORIZATION_HEADER = "Authorization";
     // Token 식별자
@@ -22,7 +28,7 @@ public class JwtUtil {
     // 토큰 만료시간
     private final long TOKEN_TIME = 60 * 60 * 1000L; // 60분
 
-    @Value("${jwt.secret.key}") // Base64 Encode 한 SecretKey
+    @Value("${JWT_SECRET_KEY}") // Base64 Encode 한 SecretKey
     private String secretKey;
     private Key key;
     private final SignatureAlgorithm signatureAlgorithm = SignatureAlgorithm.HS256;
@@ -38,12 +44,12 @@ public class JwtUtil {
         Date date = new Date();
 
         return BEARER_PREFIX +
-                Jwts.builder()
-                        .setSubject(username) // 사용자 식별자값(ID)
-                        .setExpiration(new Date(date.getTime() + TOKEN_TIME)) // 만료 시간
-                        .setIssuedAt(date) // 발급일
-                        .signWith(key, signatureAlgorithm) // 암호화 알고리즘
-                        .compact();
+            Jwts.builder()
+                .setSubject(username) // 사용자 식별자값(ID)
+                .setExpiration(new Date(date.getTime() + TOKEN_TIME)) // 만료 시간
+                .setIssuedAt(date) // 발급일
+                .signWith(key, signatureAlgorithm) // 암호화 알고리즘
+                .compact();
     }
 
     // header 에서 JWT 가져오기

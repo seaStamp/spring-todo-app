@@ -2,7 +2,7 @@ package com.sparta.todoapp.domain.comment.controller;
 
 import com.sparta.todoapp.domain.comment.dto.request.CommentRequestDto;
 import com.sparta.todoapp.domain.comment.dto.response.CommentResponseDto;
-import com.sparta.todoapp.domain.comment.service.CommentService;
+import com.sparta.todoapp.domain.comment.service.impl.CommentServiceImpl;
 import com.sparta.todoapp.global.security.UserDetailsImpl;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -22,7 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class CommentController {
 
-    private final CommentService commentService;
+    private final CommentServiceImpl commentService;
 
     @PostMapping("/todos/{todoId}/comments")
     public CommentResponseDto createComment(@PathVariable Long todoId,

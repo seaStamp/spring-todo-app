@@ -11,7 +11,7 @@ import com.sparta.todoapp.domain.user.dto.request.SignupRequestDto;
 import com.sparta.todoapp.domain.user.entity.User;
 import com.sparta.todoapp.domain.user.exception.ExistUsernameException;
 import com.sparta.todoapp.domain.user.repository.UserRepository;
-import com.sparta.todoapp.domain.user.service.UserService;
+import com.sparta.todoapp.domain.user.service.impl.UserServiceImpl;
 import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -32,7 +32,7 @@ class UserServiceTest {
     private PasswordEncoder passwordEncoder;
 
     @InjectMocks
-    private UserService userService;
+    private UserServiceImpl userService;
 
     @Test
     @DisplayName("회원가입 성공 테스트")

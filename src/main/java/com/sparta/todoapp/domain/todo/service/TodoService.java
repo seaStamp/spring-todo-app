@@ -3,88 +3,65 @@ package com.sparta.todoapp.domain.todo.service;
 import com.sparta.todoapp.domain.todo.dto.request.TodoRequestDto;
 import com.sparta.todoapp.domain.todo.dto.response.TodoResponseDto;
 import com.sparta.todoapp.domain.todo.entity.Todo;
-import com.sparta.todoapp.domain.todo.exception.ForbiddenAccessTodoException;
-import com.sparta.todoapp.domain.todo.exception.NotFoundTodoException;
-import com.sparta.todoapp.domain.todo.exception.TodoErrorCode;
-import com.sparta.todoapp.domain.todo.repository.TodoRepository;
 import com.sparta.todoapp.domain.user.dto.response.UserDto;
 import com.sparta.todoapp.domain.user.entity.User;
-import com.sparta.todoapp.domain.user.repository.UserRepository;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
-@Service
-@RequiredArgsConstructor
-@Transactional
-public class TodoService {
+public interface TodoService {
 
-    private final TodoRepository todoRepository;
-    private final UserRepository userRepository;
+    /**
+     * Todo게시글 생성
+     *
+     * @param requestDto Todo게시글 생성 요청정보
+     * @param user       Todo게시글 작성자
+     * @return Todo게시글 생성 결과
+     */
+    TodoResponseDto createTodo(TodoRequestDto requestDto, User user);
 
-    public TodoResponseDto createTodo(TodoRequestDto requestDto, User user) {
-        Todo todo = todoRepository.save(new Todo(requestDto, user));
-        return new TodoResponseDto(todo);
-    }
+    /**
+     * Todo게시글 단건조회
+     *
+     * @param todoId 조회할 게시글
+     * @return 조회결과
+     */
+    TodoResponseDto getTodo(Long todoId);
 
-    @Transactional(readOnly = true)
-    public TodoResponseDto getTodo(Long todoId) {
-        Todo todo = todoRepository.findById(todoId)
-            .orElseThrow(() -> new NotFoundTodoException(TodoErrorCode.NOT_FOUND_TODO));
-        return new TodoResponseDto(todo);
-    }
+    /**
+     * Todo게시글 전체조회
+     *
+     * @return 전체 조회 결과
+     */
+    Map<UserDto, List<TodoResponseDto>> getUserTodoMap();
 
-    @Transactional(readOnly = true)
-    public Map<UserDto, List<TodoResponseDto>> getUserTodoMap() {
-        Map<UserDto, List<TodoResponseDto>> userTodoMap = new HashMap<>();
 
-        List<User> userList = userRepository.findAll();
-        for (User user : userList) {
-            UserDto userDto = new UserDto(user);
-            // 사용자의 할일목록을 내림차순으로 가져옴
-            List<TodoResponseDto> todolistDto = convertTodoListToResponseDtoList(
-                todoRepository.findAllByUserAndIsCompletedOrderByCreatedAtDesc(user, false));
-            todolistDto.addAll(convertTodoListToResponseDtoList(
-                todoRepository.findAllByUserAndIsCompletedOrderByCreatedAtDesc(user, true)));
-            userTodoMap.put(userDto, todolistDto);
-        }
-        return userTodoMap;
-    }
+    List<TodoResponseDto> convertTodoListToResponseDtoList(List<Todo> todoList);
 
-    public List<TodoResponseDto> convertTodoListToResponseDtoList(List<Todo> todoList) {
-        return todoList.stream()
-            .map(TodoResponseDto::new)
-            .collect(Collectors.toList());
-    }
+    /**
+     * Todo게시글 수정
+     *
+     * @param todoId     수정할 게시글 id
+     * @param requestDto 수정할 정보
+     * @param user       수정 요청자
+     * @return 수정한 결과
+     */
+    TodoResponseDto updateTodo(Long todoId, TodoRequestDto requestDto, User user);
 
-    public TodoResponseDto updateTodo(Long todoId, TodoRequestDto requestDto, User user) {
-        Todo todo = validateTodo(todoId, user);
-        todo.update(requestDto);
-        return new TodoResponseDto(todo);
-    }
+    /**
+     * Todo 완료처리
+     *
+     * @param todoId 완료처리할 게시글 id
+     * @param user   완료처리 요청자
+     * @return
+     */
+    TodoResponseDto completeTodo(Long todoId, User user);
 
-    public TodoResponseDto completeTodo(Long todoId, User user) {
-        Todo todo = validateTodo(todoId, user);
-        todo.complete(); // 완료처리
-        return new TodoResponseDto(todo);
-    }
-
-    public Todo validateTodo(Long todoId, User user) {
-        Todo todo;
-
-        // 해당하는 todo가 존재하는지 확인
-        todo = todoRepository.findById(todoId).orElseThrow(() ->
-            new NotFoundTodoException(TodoErrorCode.NOT_FOUND_TODO));
-
-        // 작성자가 맞는지 확인
-        if (!(todo.getUser().getId().equals(user.getId()))) {
-            throw new ForbiddenAccessTodoException(TodoErrorCode.FORBIDDEN_ACCESS);
-        }
-
-        return todo;
-    }
+    /**
+     * Todo게시글 유효성 검사
+     *
+     * @param todoId 찾을 todo게시글
+     * @param user   찾을 게시글의 작성자
+     * @return 찾은 Todo게시글 반환
+     */
+    Todo validateTodo(Long todoId, User user);
 }

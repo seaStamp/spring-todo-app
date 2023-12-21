@@ -3,7 +3,7 @@ package com.sparta.todoapp.domain.todo.controller;
 import com.sparta.todoapp.domain.todo.dto.request.TodoRequestDto;
 import com.sparta.todoapp.domain.todo.dto.response.TodoListResponseDto;
 import com.sparta.todoapp.domain.todo.dto.response.TodoResponseDto;
-import com.sparta.todoapp.domain.todo.service.TodoService;
+import com.sparta.todoapp.domain.todo.service.impl.TodoServiceImpl;
 import com.sparta.todoapp.domain.user.dto.response.UserDto;
 import com.sparta.todoapp.global.security.UserDetailsImpl;
 import java.util.ArrayList;
@@ -26,7 +26,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class TodoController {
 
-    private final TodoService todoService;
+    private final TodoServiceImpl todoService;
 
     @PostMapping
     public ResponseEntity<TodoResponseDto> createTodo(@RequestBody TodoRequestDto requestDto,

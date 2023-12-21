@@ -14,7 +14,7 @@ import com.sparta.todoapp.domain.todo.entity.Todo;
 import com.sparta.todoapp.domain.todo.exception.ForbiddenAccessTodoException;
 import com.sparta.todoapp.domain.todo.exception.NotFoundTodoException;
 import com.sparta.todoapp.domain.todo.repository.TodoRepository;
-import com.sparta.todoapp.domain.todo.service.TodoService;
+import com.sparta.todoapp.domain.todo.service.impl.TodoServiceImpl;
 import com.sparta.todoapp.domain.user.entity.User;
 import java.util.ArrayList;
 import java.util.List;
@@ -32,7 +32,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 class TodoServiceTest {
 
     @InjectMocks
-    private TodoService todoService;
+    private TodoServiceImpl todoService;
 
     @Mock
     private TodoRepository todoRepository;

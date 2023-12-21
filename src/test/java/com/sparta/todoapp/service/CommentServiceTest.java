@@ -14,7 +14,7 @@ import com.sparta.todoapp.domain.comment.entity.Comment;
 import com.sparta.todoapp.domain.comment.exception.ForbiddenAccessCommentException;
 import com.sparta.todoapp.domain.comment.exception.NotFoundCommentException;
 import com.sparta.todoapp.domain.comment.repository.CommentRepository;
-import com.sparta.todoapp.domain.comment.service.CommentService;
+import com.sparta.todoapp.domain.comment.service.impl.CommentServiceImpl;
 import com.sparta.todoapp.domain.todo.dto.request.TodoRequestDto;
 import com.sparta.todoapp.domain.todo.entity.Todo;
 import com.sparta.todoapp.domain.todo.exception.NotFoundTodoException;
@@ -36,7 +36,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 class CommentServiceTest {
 
     @InjectMocks
-    private CommentService commentService;
+    private CommentServiceImpl commentService;
 
     @Mock
     private CommentRepository commentRepository;

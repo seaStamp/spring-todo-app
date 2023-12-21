@@ -3,69 +3,55 @@ package com.sparta.todoapp.domain.comment.service;
 import com.sparta.todoapp.domain.comment.dto.request.CommentRequestDto;
 import com.sparta.todoapp.domain.comment.dto.response.CommentResponseDto;
 import com.sparta.todoapp.domain.comment.entity.Comment;
-import com.sparta.todoapp.domain.comment.exception.CommentErrorCode;
-import com.sparta.todoapp.domain.comment.exception.ForbiddenAccessCommentException;
-import com.sparta.todoapp.domain.comment.exception.NotFoundCommentException;
-import com.sparta.todoapp.domain.comment.repository.CommentRepository;
-import com.sparta.todoapp.domain.todo.entity.Todo;
-import com.sparta.todoapp.domain.todo.exception.NotFoundTodoException;
-import com.sparta.todoapp.domain.todo.exception.TodoErrorCode;
-import com.sparta.todoapp.domain.todo.repository.TodoRepository;
 import com.sparta.todoapp.domain.user.entity.User;
 import java.util.List;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
-@Service
-@RequiredArgsConstructor
-@Transactional
-public class CommentService {
+public interface CommentService {
 
-    private final CommentRepository commentRepository;
-    private final TodoRepository todoRepository;
+    /**
+     * 댓글 생성
+     *
+     * @param todoId     댓글을 작성할 Todo게시글
+     * @param requestDto 댓글 생성 요청 정보
+     * @param user       댓글 생성 요청자
+     * @return 댓글 생성 결과
+     */
+    CommentResponseDto createComment(Long todoId, CommentRequestDto requestDto, User user);
 
-    public CommentResponseDto createComment(Long todoId, CommentRequestDto requestDto, User user) {
-        // 해당 Todo가 있는지 확인
-        Todo todo = todoRepository.findById(todoId)
-            .orElseThrow(() -> new NotFoundTodoException(TodoErrorCode.NOT_FOUND_TODO));
-        Comment comment = new Comment(requestDto, user, todo);
-        commentRepository.save(comment);
-        return new CommentResponseDto(comment);
-    }
+    /**
+     * 댓글 조회
+     *
+     * @param todoId 조회할 Todo게시글
+     * @return 조회된 댓글 목록
+     */
+    List<CommentResponseDto> getComments(Long todoId);
 
-    @Transactional(readOnly = false)
-    public List<CommentResponseDto> getComments(Long todoId) {
-        // 해당 Todo가 있는지 확인
-        todoRepository.findById(todoId)
-            .orElseThrow(() -> new NotFoundTodoException(TodoErrorCode.NOT_FOUND_TODO));
+    /**
+     * 댓글 수정
+     *
+     * @param commentId  수정할 댓글
+     * @param requestDto 댓글 수정 요청정보
+     * @param user       댓글 수정 요청자
+     * @return 댓글 수정 결과
+     */
+    CommentResponseDto modifyComment(Long commentId, CommentRequestDto requestDto,
+        User user);
 
-        List<Comment> commentList = commentRepository.findAllByTodoIdOrderByCreatedAt(todoId);
-        return commentList.stream().map(CommentResponseDto::new).toList();
-    }
 
-    public CommentResponseDto modifyComment(Long commentId, CommentRequestDto requestDto,
-        User user) {
-        // comment가 있는지 확인 + 작성자가 맞는지 확인
-        Comment comment = findComment(commentId, user);
+    /**
+     * 댓글 삭제
+     *
+     * @param commentId 삭제할 댓글
+     * @param user      댓글 삭제 요청자
+     */
+    void deleteComment(Long commentId, User user);
 
-        comment.update(requestDto);
-        return new CommentResponseDto(comment);
-    }
-
-    public void deleteComment(Long commentId, User user) {
-        // comment가 있는지 확인 + 작성자가 맞는지 확인
-        Comment comment = findComment(commentId, user);
-
-        commentRepository.delete(comment);
-    }
-
-    public Comment findComment(Long commentId, User user) {
-        Comment comment = commentRepository.findById(commentId)
-            .orElseThrow(() -> new NotFoundCommentException(CommentErrorCode.NOT_FOUND_COMMENT));
-        if (!user.getId().equals(comment.getUser().getId())) {
-            throw new ForbiddenAccessCommentException(CommentErrorCode.FORBIDDEN_ACCESS);
-        }
-        return comment;
-    }
+    /**
+     * 댓글 찾기(유효성 검사)
+     *
+     * @param commentId 찾을 댓글 ID
+     * @param user      찾을 댓글의 작성자
+     * @return 찾은 댓글 반환
+     */
+    Comment findComment(Long commentId, User user);
 }
