@@ -36,30 +36,34 @@ public class TodoController {
     }
 
     @GetMapping("/{todoId}")
-    public TodoResponseDto getTodo(@PathVariable Long todoId) {
-        return todoService.getTodo(todoId);
+    public ResponseEntity<TodoResponseDto> getTodo(@PathVariable Long todoId) {
+        TodoResponseDto responseDto = todoService.getTodo(todoId);
+        return ResponseEntity.ok(responseDto);
     }
 
     @GetMapping
-    public List<TodoListResponseDto> getAllTodos() {
+    public ResponseEntity<List<TodoListResponseDto>> getAllTodos() {
         List<TodoListResponseDto> response = new ArrayList<>();
         Map<UserDto, List<TodoResponseDto>> responseDtoMap = todoService.getUserTodoMap();
 
         responseDtoMap.forEach((key, value) -> response.add(new TodoListResponseDto(key, value)));
 
-        return response;
+        return ResponseEntity.ok(response);
     }
 
     @PatchMapping("/{todoId}")
-    public TodoResponseDto updateTodo(@PathVariable Long todoId,
+    public ResponseEntity<TodoResponseDto> updateTodo(@PathVariable Long todoId,
         @RequestBody TodoRequestDto requestDto,
         @AuthenticationPrincipal UserDetailsImpl userDetails) {
-        return todoService.updateTodo(todoId, requestDto, userDetails.getUser());
+        TodoResponseDto responseDto = todoService.updateTodo(todoId, requestDto,
+            userDetails.getUser());
+        return ResponseEntity.ok(responseDto);
     }
 
     @PatchMapping("/{todoId}/complete")
-    public TodoResponseDto completeTodo(@PathVariable Long todoId,
+    public ResponseEntity<TodoResponseDto> completeTodo(@PathVariable Long todoId,
         @AuthenticationPrincipal UserDetailsImpl userDetails) {
-        return todoService.completeTodo(todoId, userDetails.getUser());
+        TodoResponseDto responseDto = todoService.completeTodo(todoId, userDetails.getUser());
+        return ResponseEntity.ok(responseDto);
     }
 }
