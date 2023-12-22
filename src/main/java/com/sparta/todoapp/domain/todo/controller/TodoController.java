@@ -1,8 +1,10 @@
 package com.sparta.todoapp.domain.todo.controller;
 
+import com.sparta.todoapp.domain.model.dto.PageRequestDto;
 import com.sparta.todoapp.domain.todo.dto.request.TodoRequestDto;
 import com.sparta.todoapp.domain.todo.dto.response.TodoListResponseDto;
 import com.sparta.todoapp.domain.todo.dto.response.TodoResponseDto;
+import com.sparta.todoapp.domain.todo.dto.response.TodoSearchResponseDto;
 import com.sparta.todoapp.domain.todo.service.impl.TodoServiceImpl;
 import com.sparta.todoapp.domain.user.dto.response.UserDto;
 import com.sparta.todoapp.global.security.UserDetailsImpl;
@@ -10,6 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -69,14 +72,10 @@ public class TodoController {
     }
 
     @GetMapping("/search")
-    public ResponseEntity<List<TodoListResponseDto>> searchTodos(
-        @RequestParam(value = "keyword") String keyword) {
-        List<TodoListResponseDto> response = new ArrayList<>();
-        Map<UserDto, List<TodoResponseDto>> responseDtoMap = todoService.searchByContainsTitleOrContent(
-            keyword);
-
-        responseDtoMap.forEach((key, value) -> response.add(new TodoListResponseDto(key, value)));
-
-        return ResponseEntity.ok(response);
+    public ResponseEntity<Page<TodoSearchResponseDto>> searchTodos(
+        @RequestParam(value = "keyword") String keyword,
+        @RequestBody PageRequestDto pageRequestDto) {
+        Page<TodoSearchResponseDto> responseDto = todoService.searchTodos(keyword, pageRequestDto);
+        return ResponseEntity.ok(responseDto);
     }
 }

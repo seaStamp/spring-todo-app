@@ -1,12 +1,15 @@
 package com.sparta.todoapp.domain.todo.service;
 
+import com.sparta.todoapp.domain.model.dto.PageRequestDto;
 import com.sparta.todoapp.domain.todo.dto.request.TodoRequestDto;
 import com.sparta.todoapp.domain.todo.dto.response.TodoResponseDto;
+import com.sparta.todoapp.domain.todo.dto.response.TodoSearchResponseDto;
 import com.sparta.todoapp.domain.todo.entity.Todo;
 import com.sparta.todoapp.domain.user.dto.response.UserDto;
 import com.sparta.todoapp.domain.user.entity.User;
 import java.util.List;
 import java.util.Map;
+import org.springframework.data.domain.Page;
 
 public interface TodoService {
 
@@ -71,5 +74,5 @@ public interface TodoService {
      * @param keyword 찾을 키워드
      * @return 찾은 Todo게시글 반환
      */
-    Map<UserDto, List<TodoResponseDto>> searchByContainsTitleOrContent(String keyword);
+    Page<TodoSearchResponseDto> searchTodos(String keyword, PageRequestDto pageRequestDto);
 }

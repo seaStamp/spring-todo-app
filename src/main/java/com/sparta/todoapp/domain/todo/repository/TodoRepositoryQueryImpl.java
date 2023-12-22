@@ -9,6 +9,9 @@ import com.sparta.todoapp.domain.todo.entity.Todo;
 import com.sparta.todoapp.domain.user.entity.User;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.support.PageableExecutionUtils;
 import org.springframework.stereotype.Repository;
 
 @Repository
@@ -29,18 +32,24 @@ public class TodoRepositoryQueryImpl implements TodoRepositoryQuery {
     }
 
     @Override
-    public List<Todo> searchByUserAndContainsTitleOrContent(final String keyword,
-        final String username) {
+    public Page<Todo> searchByUserAndContainsTitleOrContent(final String keyword,
+        final Pageable pageable) {
 
-        JPAQuery<Todo> query = jpaQueryFactory.select(todo)
+        List<Todo> todoList = jpaQueryFactory.select(todo)
             .from(todo)
-            .leftJoin(todo.user).fetchJoin()
-            .where(searchTitle(keyword).or(searchContent(keyword)),
-                usernameEquals(username)
-            )
-            .orderBy(todo.createdAt.desc());
+            .leftJoin(todo.user)
+            .fetchJoin()
+            .where(searchTitle(keyword).or(searchContent(keyword)))
+            .offset(pageable.getOffset())
+            .limit(pageable.getPageSize())
+            .fetch();
 
-        return query.fetch();
+        Long totalSize = jpaQueryFactory.select(todo.count())
+            .from(todo)
+            .where(searchTitle(keyword).or(searchContent(keyword)))
+            .fetchFirst();
+
+        return PageableExecutionUtils.getPage(todoList, pageable, () -> totalSize);
     }
 
     private BooleanExpression searchTitle(String keyword) {

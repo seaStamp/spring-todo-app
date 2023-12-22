@@ -1,7 +1,9 @@
 package com.sparta.todoapp.domain.todo.service.impl;
 
+import com.sparta.todoapp.domain.model.dto.PageRequestDto;
 import com.sparta.todoapp.domain.todo.dto.request.TodoRequestDto;
 import com.sparta.todoapp.domain.todo.dto.response.TodoResponseDto;
+import com.sparta.todoapp.domain.todo.dto.response.TodoSearchResponseDto;
 import com.sparta.todoapp.domain.todo.entity.Todo;
 import com.sparta.todoapp.domain.todo.exception.ForbiddenAccessTodoException;
 import com.sparta.todoapp.domain.todo.exception.NotFoundTodoException;
@@ -16,6 +18,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -97,20 +100,10 @@ public class TodoServiceImpl implements TodoService {
     }
 
     @Override
-    public Map<UserDto, List<TodoResponseDto>> searchByContainsTitleOrContent(
-        final String keyword) {
-        Map<UserDto, List<TodoResponseDto>> userTodoMap = new HashMap<>();
-
-        List<User> userList = userRepository.findAll();
-        for (User user : userList) {
-            UserDto userDto = new UserDto(user);
-            // 사용자의 할일목록을 내림차순으로 가져옴
-            List<TodoResponseDto> todolistDto = convertTodoListToResponseDtoList(
-                todoRepository.searchByUserAndContainsTitleOrContent(keyword, user.getUsername()));
-            if (!todolistDto.isEmpty()) {
-                userTodoMap.put(userDto, todolistDto);
-            }
-        }
-        return userTodoMap;
+    public Page<TodoSearchResponseDto> searchTodos(
+        final String keyword, final PageRequestDto pageRequestDto) {
+        Page<Todo> todoList = todoRepository.searchByUserAndContainsTitleOrContent(keyword,
+            pageRequestDto.toPageable());
+        return todoList.map(todo -> new TodoSearchResponseDto(todo, todo.getUser()));
     }
 }
