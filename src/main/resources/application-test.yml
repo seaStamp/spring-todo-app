@@ -2,17 +2,30 @@ spring:
   datasource:
     url: jdbc:h2:mem:testdb;MODE=MySQL
 
-jpa:
-  open-in-view: false
-  show-sql: true
-  hibernate:
-    ddl-auto: update
-  defer-datasource-initialization: true
-  properties:
+  jpa:
+    open-in-view: false
+    show-sql: true
     hibernate:
-      format_sql: true
-      use_sql_comments: true
+      ddl-auto: update
+    defer-datasource-initialization: true
+    properties:
+      hibernate:
+        format_sql: true
+        use_sql_comments: true
 
 jwt:
   secret:
     key: testtesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttest
+
+cloud:
+  aws:
+    s3:
+      bucket: testbucket
+    credentials:
+      access-key: testtesttesttest
+      secret-key: testtesttesttesttesttesttesttesttesttesttesttest
+    region:
+      static: ap-northeast-2
+      auto: false
+    stack:
+      auto: false
