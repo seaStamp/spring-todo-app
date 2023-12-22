@@ -3,7 +3,6 @@ package com.sparta.todoapp.controller;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -25,8 +24,10 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.FilterType;
 import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
@@ -69,19 +70,56 @@ class TodoControllerTest {
     }
 
     @Test
-    @DisplayName("Todo 생성 테스트")
+    @DisplayName("이미지 없는 Todo 생성 테스트")
     void createTodoTest() throws Exception {
         // given
-        String title = "할 일 제목";
-        String content = "할 일 내용";
+        String title = "오늘의 할일1 제목";
+        String content = "오늘의 할일1 내용";
         TodoRequestDto requestDto = new TodoRequestDto(title, content);
+        String jsonBody = objectMapper.writeValueAsString(requestDto);
 
-        // when - then
-        String body = objectMapper.writeValueAsString(requestDto);
+        // MultiPart 요청 구성
+        MockMultipartFile dtoFile = new MockMultipartFile(
+            "dto",
+            "",
+            "application/json",
+            jsonBody.getBytes()
+        );
 
-        mvc.perform(post("/api/todos")
-                .content(body)
-                .contentType(MediaType.APPLICATION_JSON)
+        // when-then
+        mvc.perform(MockMvcRequestBuilders.multipart("/api/todos")
+                .file(dtoFile)
+                .principal(mockPrincipal))
+            .andExpect(status().isCreated());
+    }
+
+    @Test
+    @DisplayName("이미지와 함께 Todo 생성 테스트")
+    void createTodoTestWithImage() throws Exception {
+        // given
+        String title = "오늘의 할일1 제목";
+        String content = "오늘의 할일1 내용";
+        TodoRequestDto requestDto = new TodoRequestDto(title, content);
+        String jsonBody = objectMapper.writeValueAsString(requestDto);
+
+        MockMultipartFile dtoFile = new MockMultipartFile(
+            "dto",
+            "",
+            "application/json",
+            jsonBody.getBytes()
+        );
+
+        MockMultipartFile imagefile = new MockMultipartFile(
+            "image",
+            "image.jpg",
+            "image/jpeg",
+            "image data".getBytes()
+        );
+
+        // when-then
+        mvc.perform(MockMvcRequestBuilders.multipart("/api/todos")
+                .file(dtoFile)
+                .file(imagefile)
                 .principal(mockPrincipal))
             .andExpect(status().isCreated());
     }
