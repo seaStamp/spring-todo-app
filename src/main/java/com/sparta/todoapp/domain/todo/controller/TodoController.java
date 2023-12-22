@@ -8,6 +8,7 @@ import com.sparta.todoapp.domain.todo.dto.response.TodoSearchResponseDto;
 import com.sparta.todoapp.domain.todo.service.impl.TodoServiceImpl;
 import com.sparta.todoapp.domain.user.dto.response.UserDto;
 import com.sparta.todoapp.global.security.UserDetailsImpl;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -23,7 +24,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 @RequestMapping("/api/todos")
 @RestController
@@ -33,9 +36,12 @@ public class TodoController {
     private final TodoServiceImpl todoService;
 
     @PostMapping
-    public ResponseEntity<TodoResponseDto> createTodo(@RequestBody TodoRequestDto requestDto,
-        @AuthenticationPrincipal UserDetailsImpl userDetails) {
-        TodoResponseDto responseDto = todoService.createTodo(requestDto, userDetails.getUser());
+    public ResponseEntity<TodoResponseDto> createTodo(
+        @RequestPart(value = "dto") TodoRequestDto requestDto,
+        @RequestPart(value = "image", required = false) MultipartFile multipartFile,
+        @AuthenticationPrincipal UserDetailsImpl userDetails) throws IOException {
+        TodoResponseDto responseDto = todoService.createTodo(requestDto, userDetails.getUser(),
+            multipartFile);
         return ResponseEntity.status(HttpStatus.CREATED).body(responseDto);
     }
 

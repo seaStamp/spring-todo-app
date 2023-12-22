@@ -13,6 +13,8 @@ import com.sparta.todoapp.domain.todo.service.TodoService;
 import com.sparta.todoapp.domain.user.dto.response.UserDto;
 import com.sparta.todoapp.domain.user.entity.User;
 import com.sparta.todoapp.domain.user.repository.UserRepository;
+import com.sparta.todoapp.global.s3.AwsS3Util;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -21,6 +23,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 @Service
 @RequiredArgsConstructor
@@ -29,10 +32,17 @@ public class TodoServiceImpl implements TodoService {
 
     private final TodoRepository todoRepository;
     private final UserRepository userRepository;
+    private final AwsS3Util s3util;
 
     @Override
-    public TodoResponseDto createTodo(TodoRequestDto requestDto, User user) {
+    public TodoResponseDto createTodo(TodoRequestDto requestDto, User user,
+        MultipartFile multipartFile) throws IOException {
         Todo todo = todoRepository.save(new Todo(requestDto, user));
+        if (multipartFile != null && !multipartFile.isEmpty()) {
+            String imageName = s3util.uploadImage(multipartFile);
+            String imagePath = s3util.getImagePath(imageName);
+            todo.uploadImage(imageName, imagePath);
+        }
         return new TodoResponseDto(todo);
     }
 

@@ -7,9 +7,11 @@ import com.sparta.todoapp.domain.todo.dto.response.TodoSearchResponseDto;
 import com.sparta.todoapp.domain.todo.entity.Todo;
 import com.sparta.todoapp.domain.user.dto.response.UserDto;
 import com.sparta.todoapp.domain.user.entity.User;
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import org.springframework.data.domain.Page;
+import org.springframework.web.multipart.MultipartFile;
 
 public interface TodoService {
 
@@ -20,7 +22,8 @@ public interface TodoService {
      * @param user       Todo게시글 작성자
      * @return Todo게시글 생성 결과
      */
-    TodoResponseDto createTodo(TodoRequestDto requestDto, User user);
+    TodoResponseDto createTodo(TodoRequestDto requestDto, User user, MultipartFile multipartFile)
+        throws IOException;
 
     /**
      * Todo게시글 단건조회

@@ -16,6 +16,7 @@ import com.sparta.todoapp.domain.todo.exception.NotFoundTodoException;
 import com.sparta.todoapp.domain.todo.repository.TodoRepository;
 import com.sparta.todoapp.domain.todo.service.impl.TodoServiceImpl;
 import com.sparta.todoapp.domain.user.entity.User;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -27,6 +28,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.web.multipart.MultipartFile;
 
 @ExtendWith(MockitoExtension.class)
 class TodoServiceTest {
@@ -47,15 +49,16 @@ class TodoServiceTest {
 
     @Test
     @DisplayName("Todo 생성 테스트")
-    void createTodoTest() {
+    void createTodoTest() throws IOException {
         // given
         TodoRequestDto requestDto = new TodoRequestDto("테스트 제목", "테스트 내용");
         Todo todo = new Todo(requestDto, testUser);
+        MultipartFile multipartFile = null;
 
         given(todoRepository.save(any())).willReturn(todo);
 
         // when
-        TodoResponseDto result = todoService.createTodo(requestDto, testUser);
+        TodoResponseDto result = todoService.createTodo(requestDto, testUser, multipartFile);
 
         // then
         assertEquals(result.getTitle(), requestDto.getTitle());

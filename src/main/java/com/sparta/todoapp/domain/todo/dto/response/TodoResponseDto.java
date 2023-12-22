@@ -6,14 +6,17 @@ import lombok.Getter;
 
 @Getter
 public class TodoResponseDto {
+
     private String title;
     private String content;
+    private String imagePath;
     private boolean isCompleted;
     private LocalDateTime createDate;
 
     public TodoResponseDto(Todo todo) {
         this.title = todo.getTitle();
         this.content = todo.getContent();
+        this.imagePath = todo.getImagePath();
         this.isCompleted = todo.isCompleted();
         this.createDate = todo.getCreatedAt();
     }

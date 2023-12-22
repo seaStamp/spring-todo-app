@@ -1,8 +1,8 @@
 package com.sparta.todoapp.domain.todo.entity;
 
+import com.sparta.todoapp.domain.model.Timestamped;
 import com.sparta.todoapp.domain.todo.dto.request.TodoRequestDto;
 import com.sparta.todoapp.domain.user.entity.User;
-import com.sparta.todoapp.domain.model.Timestamped;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -23,6 +23,7 @@ import lombok.Setter;
 @Table(name = "todos")
 @NoArgsConstructor
 public class Todo extends Timestamped {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -35,6 +36,13 @@ public class Todo extends Timestamped {
 
     @Column(nullable = false)
     private boolean isCompleted;
+
+    @Column
+    private String imageName;
+
+    @Column
+    private String imagePath;
+
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
@@ -57,6 +65,11 @@ public class Todo extends Timestamped {
             System.out.println("get content");
             this.content = requestDto.getContent();
         }
+    }
+
+    public void uploadImage(final String imageName, final String imagePath) {
+        this.imageName = imageName;
+        this.imagePath = imagePath;
     }
 
     public void complete() {
