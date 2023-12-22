@@ -12,5 +12,5 @@ public interface TodoRepositoryQuery {
 
     List<Todo> findAllByUserAndIsCompleted(User user, boolean b);
 
-    Page<Todo> searchByUserAndContainsTitleOrContent(String keyword, Pageable pageable);
+    Page<Todo> searchByContainsTitleOrContent(String keyword, Pageable pageable);
 }

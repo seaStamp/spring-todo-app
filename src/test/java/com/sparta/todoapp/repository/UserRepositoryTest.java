@@ -1,7 +1,9 @@
 package com.sparta.todoapp.repository;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import com.sparta.todoapp.config.TestConfig;
 import com.sparta.todoapp.domain.user.entity.User;
 import com.sparta.todoapp.domain.user.repository.UserRepository;
 import java.util.Optional;
@@ -9,29 +11,32 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ActiveProfiles;
 
 @DataJpaTest
+@Import(TestConfig.class)
 @ActiveProfiles("test")
 class UserRepositoryTest {
+
     @Autowired
     private UserRepository userRepository;
 
     @Test
     @DisplayName("유저 db에 저장하기")
-    void saveUserTest(){
+    void saveUserTest() {
         // given
         User newUser = User.builder()
-                .username("newUser")
-                .password("password")
-                .build();
+            .username("newUser")
+            .password("password")
+            .build();
 
         // when
         User saveUser = userRepository.save(newUser);
 
         // then
-        assertEquals("newUser",saveUser.getUsername());
-        assertEquals("password",saveUser.getPassword());
+        assertEquals("newUser", saveUser.getUsername());
+        assertEquals("password", saveUser.getPassword());
     }
 
     @Test
@@ -39,9 +44,9 @@ class UserRepositoryTest {
     void findByUsernameSuccessTest() {
         // given
         User testUser = User.builder()
-                .username("testUser")
-                .password("password")
-                .build();
+            .username("testUser")
+            .password("password")
+            .build();
         userRepository.save(testUser);
 
         // when
@@ -57,9 +62,9 @@ class UserRepositoryTest {
     void findByUsernameFailTest() {
         // given
         User testUser = User.builder()
-                .username("testUser")
-                .password("password")
-                .build();
+            .username("testUser")
+            .password("password")
+            .build();
         userRepository.save(testUser);
 
         // when

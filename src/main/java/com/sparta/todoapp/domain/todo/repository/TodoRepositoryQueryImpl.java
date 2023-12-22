@@ -32,7 +32,7 @@ public class TodoRepositoryQueryImpl implements TodoRepositoryQuery {
     }
 
     @Override
-    public Page<Todo> searchByUserAndContainsTitleOrContent(final String keyword,
+    public Page<Todo> searchByContainsTitleOrContent(final String keyword,
         final Pageable pageable) {
 
         List<Todo> todoList = jpaQueryFactory.select(todo)

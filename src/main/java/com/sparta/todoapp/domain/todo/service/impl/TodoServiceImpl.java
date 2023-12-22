@@ -102,7 +102,7 @@ public class TodoServiceImpl implements TodoService {
     @Override
     public Page<TodoSearchResponseDto> searchTodos(
         final String keyword, final PageRequestDto pageRequestDto) {
-        Page<Todo> todoList = todoRepository.searchByUserAndContainsTitleOrContent(keyword,
+        Page<Todo> todoList = todoRepository.searchByContainsTitleOrContent(keyword,
             pageRequestDto.toPageable());
         return todoList.map(todo -> new TodoSearchResponseDto(todo, todo.getUser()));
     }

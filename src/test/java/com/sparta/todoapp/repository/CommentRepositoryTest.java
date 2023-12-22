@@ -2,10 +2,11 @@ package com.sparta.todoapp.repository;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import com.sparta.todoapp.domain.comment.repository.CommentRepository;
+import com.sparta.todoapp.config.TestConfig;
 import com.sparta.todoapp.domain.comment.dto.request.CommentRequestDto;
-import com.sparta.todoapp.domain.todo.dto.request.TodoRequestDto;
 import com.sparta.todoapp.domain.comment.entity.Comment;
+import com.sparta.todoapp.domain.comment.repository.CommentRepository;
+import com.sparta.todoapp.domain.todo.dto.request.TodoRequestDto;
 import com.sparta.todoapp.domain.todo.entity.Todo;
 import com.sparta.todoapp.domain.todo.repository.TodoRepository;
 import com.sparta.todoapp.domain.user.entity.User;
@@ -19,9 +20,11 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ActiveProfiles;
 
 @DataJpaTest
+@Import(TestConfig.class)
 @ActiveProfiles("test")
 class CommentRepositoryTest {
 
@@ -48,6 +51,7 @@ class CommentRepositoryTest {
     @Nested
     @DisplayName("특정 Todo의 늦게 생성된 순으로 댓글가져오기")
     class FindAllByTodoIdOrderByCreatedAtTest {
+
         @Test
         @DisplayName("가져오기 성공")
         void FindSuccess() {
@@ -62,7 +66,8 @@ class CommentRepositoryTest {
             }
 
             // when
-            List<Comment> foundComments = commentRepository.findAllByTodoIdOrderByCreatedAt(testTodo.getId());
+            List<Comment> foundComments = commentRepository.findAllByTodoIdOrderByCreatedAt(
+                testTodo.getId());
 
             // then
             assertEquals(3, foundComments.size());
