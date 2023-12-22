@@ -6,6 +6,7 @@ import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.sparta.todoapp.domain.todo.entity.Todo;
+import com.sparta.todoapp.domain.user.entity.User;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
@@ -17,7 +18,18 @@ public class TodoRepositoryQueryImpl implements TodoRepositoryQuery {
     private final JPAQueryFactory jpaQueryFactory;
 
     @Override
-    public List<Todo> searchByUserAndContainsTitleOrMember(final String keyword,
+    public List<Todo> findAllByUserAndIsCompleted(final User user, final boolean b) {
+        JPAQuery<Todo> query = jpaQueryFactory.select(todo)
+            .from(todo)
+            .leftJoin(todo.user).fetchJoin()
+            .where(todo.isCompleted.eq(b), todo.user.eq(user))
+            .orderBy(todo.createdAt.desc());
+
+        return query.fetch();
+    }
+
+    @Override
+    public List<Todo> searchByUserAndContainsTitleOrContent(final String keyword,
         final String username) {
 
         JPAQuery<Todo> query = jpaQueryFactory.select(todo)
@@ -25,7 +37,8 @@ public class TodoRepositoryQueryImpl implements TodoRepositoryQuery {
             .leftJoin(todo.user).fetchJoin()
             .where(searchTitle(keyword).or(searchContent(keyword)),
                 usernameEquals(username)
-            );
+            )
+            .orderBy(todo.createdAt.desc());
 
         return query.fetch();
     }

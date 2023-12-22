@@ -51,9 +51,9 @@ public class TodoServiceImpl implements TodoService {
             UserDto userDto = new UserDto(user);
             // 사용자의 할일목록을 내림차순으로 가져옴
             List<TodoResponseDto> todolistDto = convertTodoListToResponseDtoList(
-                todoRepository.findAllByUserAndIsCompletedOrderByCreatedAtDesc(user, false));
+                todoRepository.findAllByUserAndIsCompleted(user, false));
             todolistDto.addAll(convertTodoListToResponseDtoList(
-                todoRepository.findAllByUserAndIsCompletedOrderByCreatedAtDesc(user, true)));
+                todoRepository.findAllByUserAndIsCompleted(user, true)));
             userTodoMap.put(userDto, todolistDto);
         }
         return userTodoMap;
@@ -106,7 +106,7 @@ public class TodoServiceImpl implements TodoService {
             UserDto userDto = new UserDto(user);
             // 사용자의 할일목록을 내림차순으로 가져옴
             List<TodoResponseDto> todolistDto = convertTodoListToResponseDtoList(
-                todoRepository.searchByUserAndContainsTitleOrMember(keyword, user.getUsername()));
+                todoRepository.searchByUserAndContainsTitleOrContent(keyword, user.getUsername()));
             if (!todolistDto.isEmpty()) {
                 userTodoMap.put(userDto, todolistDto);
             }
